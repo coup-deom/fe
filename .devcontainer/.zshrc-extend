@@ -5,6 +5,8 @@ alias gb="git branch"
 alias gc="git commit"
 alias gsw="git switch"
 alias gr="git remote"
+alias pull="git pull"
+alias push="git push"
 
 alias gl="git log"
 alias gla="git log --all"
@@ -17,4 +19,3 @@ git config --global core.pager "batcat --theme=OneHalfDark"
 alias tree="tre"
 alias cat="batcat"
 alias more="less"
-

@@ -13,7 +13,7 @@
 	},
 	"customizations": {
 		"vscode": {
-			"extensions": ["arcanis.vscode-zipfs", "pomber.git-file-history"],
+			"extensions": ["arcanis.vscode-zipfs", "pomber.git-file-history", "esbenp.prettier-vscode"],
 			"settings": {
 				"editor.tabSize": 4,
 				"terminal.integrated.defaultProfile.linux": "zsh",
@@ -45,7 +45,7 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [5173],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "cd ${containerWorkspaceFolder}/.devcontainer && sudo zsh init.sh"
