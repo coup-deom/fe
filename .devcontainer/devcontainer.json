@@ -13,7 +13,14 @@
 	},
 	"customizations": {
 		"vscode": {
-			"extensions": ["arcanis.vscode-zipfs", "pomber.git-file-history", "esbenp.prettier-vscode"],
+			"extensions": [
+				"arcanis.vscode-zipfs",
+				"pomber.git-file-history",
+				"esbenp.prettier-vscode",
+				"bradlc.vscode-tailwindcss",
+				"PeterMekhaeil.vscode-tailwindcss-explorer",
+				"heybourn.headwind"
+			],
 			"settings": {
 				"editor.tabSize": 4,
 				"terminal.integrated.defaultProfile.linux": "zsh",
