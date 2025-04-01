@@ -20,6 +20,10 @@ export default [
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parser: tsParser,
+      parserOptions: {
+        project: tsconfig,
+      },
     },
     plugins: {
       "react-hooks": reactHooks,
@@ -67,12 +71,6 @@ export default [
           endOfLine: "auto",
         },
       ],
-    },
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        project: tsconfig,
-      },
     },
     settings: [
       {
