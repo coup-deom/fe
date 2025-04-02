@@ -1,11 +1,12 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "./base.css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Airbnb Cereal", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 

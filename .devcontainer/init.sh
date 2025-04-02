@@ -14,3 +14,5 @@ mise settings experimental=true
 # as a node
 sudo -u node mise trust ../mise.toml
 sudo -u node mise settings experimental=true
+
+

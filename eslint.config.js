@@ -80,6 +80,12 @@ export default [
             project: tsconfig,
           },
         },
+        'import/resolver': {
+          typescript: {
+            project: './tsconfig.json',
+            alwaysTryTypes: true,
+          },
+        }
       },
     ],
   },

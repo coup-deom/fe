@@ -1,9 +1,9 @@
-export const CompareArrowIcon: React.FC<{ className?: string }> = ({
-  className,
+export const CompareArrowIcon: React.FC<React.ComponentProps<'svg'>> = ({
+  ...props
 }) => {
   return (
     <svg
-      className={className}
+      {...props}
       width="24"
       height="24"
       viewBox="0 0 24 24"
@@ -18,7 +18,7 @@ export const CompareArrowIcon: React.FC<{ className?: string }> = ({
       </g>
       <defs>
         <clipPath id="clip0_211_2364">
-          <rect width="24" height="24" fill="white" />
+          <rect width="24" height="24" />
         </clipPath>
       </defs>
     </svg>
