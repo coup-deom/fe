@@ -629,9 +629,9 @@ __metadata:
   linkType: hard
 
 "@eslint/config-helpers@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@eslint/config-helpers@npm:0.2.0"
-  checksum: 10c0/743a64653e13177029108f57ab47460ded08e3412c86216a14b7e8ab2dc79c2b64be45bf55c5ef29f83692a707dc34cf1e9217e4b8b4b272a0d9b691fdaf6a2a
+  version: 0.2.1
+  resolution: "@eslint/config-helpers@npm:0.2.1"
+  checksum: 10c0/3e829a78b0bb4f7c44384ba1df3986e5de24b7f440ad5c6bb3cfc366ded773a869ca9ee8d212b5a563ae94596c5940dea6fd2ea1ee53a84c6241ac953dcb8bb7
   languageName: node
   linkType: hard
 
@@ -641,6 +641,15 @@ __metadata:
   dependencies:
     "@types/json-schema": "npm:^7.0.15"
   checksum: 10c0/d032af81195bb28dd800c2b9617548c6c2a09b9490da3c5537fd2a1201501666d06492278bb92cfccac1f7ac249e58601dd87f813ec0d6a423ef0880434fa0c3
+  languageName: node
+  linkType: hard
+
+"@eslint/core@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@eslint/core@npm:0.13.0"
+  dependencies:
+    "@types/json-schema": "npm:^7.0.15"
+  checksum: 10c0/ba724a7df7ed9dab387481f11d0d0f708180f40be93acce2c21dacca625c5867de3528760c42f1c457ccefe6a669d525ff87b779017eabc0d33479a36300797b
   languageName: node
   linkType: hard
 
@@ -676,12 +685,12 @@ __metadata:
   linkType: hard
 
 "@eslint/plugin-kit@npm:^0.2.7":
-  version: 0.2.7
-  resolution: "@eslint/plugin-kit@npm:0.2.7"
+  version: 0.2.8
+  resolution: "@eslint/plugin-kit@npm:0.2.8"
   dependencies:
-    "@eslint/core": "npm:^0.12.0"
+    "@eslint/core": "npm:^0.13.0"
     levn: "npm:^0.4.1"
-  checksum: 10c0/0a1aff1ad63e72aca923217e556c6dfd67d7cd121870eb7686355d7d1475d569773528a8b2111b9176f3d91d2ea81f7413c34600e8e5b73d59e005d70780b633
+  checksum: 10c0/554847c8f2b6bfe0e634f317fc43d0b54771eea0015c4f844f75915fdb9e6170c830c004291bad57db949d61771732e459f36ed059f45cf750af223f77357c5c
   languageName: node
   linkType: hard
 
@@ -4377,6 +4386,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-import-resolver-vite@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "eslint-import-resolver-vite@npm:2.1.0"
+  dependencies:
+    debug: "npm:^4.3.4"
+    resolve: "npm:^1.22.8"
+  peerDependencies:
+    eslint-plugin-import: ^2
+  checksum: 10c0/1a71242652dfedc175390835e388a95d0e3fd742e279d51b557578278ad156b2b76656b1f445791fd9053e556db82e561741aab786fa87dc64c57d186268668b
+  languageName: node
+  linkType: hard
+
 "eslint-module-utils@npm:^2.12.0":
   version: 2.12.0
   resolution: "eslint-module-utils@npm:2.12.0"
@@ -4713,6 +4734,7 @@ __metadata:
     eslint-config-prettier: "npm:^8.9.0"
     eslint-import-resolver-alias: "npm:^1.1.2"
     eslint-import-resolver-typescript: "npm:^4.3.1"
+    eslint-import-resolver-vite: "npm:^2.1.0"
     eslint-plugin-import: "npm:^2.28.0"
     eslint-plugin-prettier: "npm:^5.0.0"
     eslint-plugin-react-hooks: "npm:^4.6.0"
@@ -6578,7 +6600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.22.4":
+"resolve@npm:^1.22.4, resolve@npm:^1.22.8":
   version: 1.22.10
   resolution: "resolve@npm:1.22.10"
   dependencies:
@@ -6591,7 +6613,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.22.4#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
   version: 1.22.10
   resolution: "resolve@patch:resolve@npm%3A1.22.10#optional!builtin<compat/resolve>::version=1.22.10&hash=c3c19d"
   dependencies:

@@ -5,9 +5,10 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Filters } from '@/components/base/Filters'
 import { SearchFilter } from '@/components/base/SearchFilter'
 import { CommonLayout } from '@/components/layouts/CommonLayout'
+import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/')({
-  component: Index,
+  component: withAccessToken(Index),
 })
 
 function Index() {

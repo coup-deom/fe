@@ -79,6 +79,10 @@ export default [
           typescript: {
             project: tsconfig,
           },
+          vite: {
+              viteConfig: viteConfig,
+          },
+
         },
         'import/resolver': {
           typescript: {
