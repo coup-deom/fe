@@ -11,7 +11,7 @@ export const Route = createFileRoute('/signin/callback')({
       return
     }
 
-    window.localStorage.setItem('accessToken', accessToken)
+    window.localStorage.setItem('access_token', accessToken)
     queueMicrotask(() => window.history.replaceState({}, '', '/'))
   },
 })
