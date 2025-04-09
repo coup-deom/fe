@@ -74,20 +74,19 @@ export default [
     },
     settings: [
       {
-        "import/parsers": {
+      "import/parsers": {
           "@stylistic/ts/parser": [".ts", ".tsx"],
           typescript: {
             project: tsconfig,
           },
-          vite: {
-              viteConfig: viteConfig,
-          },
-
         },
         'import/resolver': {
           typescript: {
             project: './tsconfig.json',
             alwaysTryTypes: true,
+          },
+          vite: {
+            configPath: "./vite.config.ts"
           },
         }
       },

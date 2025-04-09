@@ -2,9 +2,14 @@ import { useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
+import { Stepper } from '@/components/airbnbs/stepper'
+import { Dialog } from '@/components/base/Dialog'
 import { Filters } from '@/components/base/Filters'
 import { SearchFilter } from '@/components/base/SearchFilter'
-import { CommonLayout } from '@/components/layouts/CommonLayout'
+import { ShopCard } from '@/components/base/ShopCard'
+import { TradeCard } from '@/components/base/TradeCard'
+import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
+import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/')({
@@ -14,6 +19,7 @@ export const Route = createFileRoute('/')({
 function Index() {
   const [filters, setFilters] = useState(new Set<string>())
   const [shop, setShop] = useState('')
+  const [count, setCount] = useState(0)
   return (
     <CommonLayout title="기본 프레임">
       <Filters.WithWrapper
@@ -34,6 +40,48 @@ function Index() {
       >
         <SearchFilter.WithWrapper value={shop} onChange={setShop}>
           {shop}
+          <VerticalCardList>
+            <Stepper
+              value={count}
+              onChange={setCount}
+              formatter={v => `${v} 개`}
+            />
+            <ShopCard>
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+              <ShopCard.Stamp />
+            </ShopCard>
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+            <TradeCard />
+
+            <Dialog open={false}>
+              <Dialog.Content>
+                <Dialog.Title>Users</Dialog.Title>
+                <Dialog.Description>
+                  The following users have access to this project.
+                </Dialog.Description>
+
+                <Dialog.Close>Close</Dialog.Close>
+              </Dialog.Content>
+            </Dialog>
+          </VerticalCardList>
         </SearchFilter.WithWrapper>
       </Filters.WithWrapper>
     </CommonLayout>
