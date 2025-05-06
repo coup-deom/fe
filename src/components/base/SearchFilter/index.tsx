@@ -41,11 +41,11 @@ const SearchFilterRoot: React.FC<React.PropsWithChildren<Props>> = ({
 }
 
 const SearchFilterWithWrapper: React.FC<
-  React.PropsWithChildren<Props & { className?: string }>
+  React.PropsWithChildren<Props & { className?: string; }>
 > = ({ className, children, ...props }) => {
   return (
-    <div className={cn('pt-15', className)}>
-      <div className="fixed left-0 right-0 top-31">
+    <div className={cn('pt-15')}>
+      <div className={cn('fixed left-0 right-0 shadow-md top-31', className)}>
         <SearchFilterRoot {...props} />
       </div>
       {children}

@@ -1,3 +1,4 @@
+import setupLocatorUI from '@locator/runtime'
 import { StrictMode } from 'react'
 import './index.css'
 
@@ -6,6 +7,10 @@ import { RouterProvider, createRouter } from '@tanstack/react-router'
 import ReactDOM from 'react-dom/client'
 
 import { routeTree } from './routeTree.gen'
+
+if (process.env.NODE_ENV === 'development') {
+  setupLocatorUI()
+}
 
 const queryClient = new QueryClient()
 const router = createRouter({ routeTree })

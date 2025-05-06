@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
@@ -6,6 +6,7 @@ import { Button } from '@/components/airbnbs/button'
 import { DeleteIcon } from '@/components/base/svgs/DeleteIcon'
 import { MinusIcon } from '@/components/base/svgs/MinusIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/otp')({
   component: RouteComponent,
@@ -13,10 +14,26 @@ export const Route = createFileRoute('/otp')({
 })
 
 function RouteComponent() {
-  const [OTP, setOTP] = useState('1234')
+  const [OTP, setOTP] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [isValid, setIsValid] = useState<boolean>()
+
+  useEffect(() => {
+    if (OTP.length !== 4) {
+      setIsValid(undefined)
+      return
+    }
+
+    setLoading(true)
+    setTimeout(() => {
+      setIsValid(Math.random() > 0.5)
+      setLoading(false)
+    }, 1000)
+  }, [OTP])
+
   return (
     <CommonLayout title="OTP" seamless>
-      <div className="flex py-3 text-2xl items-center text-[#717171] font-bold justify-center w-full">
+      <div className="flex items-center justify-center w-full py-3 text-2xl font-bold">
         고객의 OTP를 입력해주세요.
       </div>
       <div className="flex items-center justify-center gap-3 py-16 text-5xl font-bold">
@@ -33,15 +50,41 @@ function RouteComponent() {
             ) : (
               <span
                 key={index}
-                className="w-16 h-16 flex justify-center font-bold items-center text-[#22CC88]"
+                className={cn(
+                  'w-16 h-16 flex justify-center font-bold items-center ',
+                  isValid === false ? 'text-[#D73B53]' : 'text-[#22CC88]',
+                )}
               >
                 {item}
               </span>
             ),
           )}
       </div>
-      <div className="flex justify-center items-center font-bold text-xl text-[#D73B53]">
-        유효하지 않은 OTP에요.
+      <div className="flex items-center justify-center text-xl font-bold h-7">
+        {loading && (
+          <div className="flex items-center justify-center mr-2 w-7 h-7">
+            <svg
+              className="w-7 h-7 animate-spin text-secondary-foreground"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-75"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeDasharray="30 10"
+              ></circle>
+            </svg>
+          </div>
+        )}
+
+        {isValid === false && (
+          <span className="text-[#D73B53]">유효하지 않은 OTP에요</span>
+        )}
       </div>
       <div className="inline-flex items-center justify-center flex-1 w-full">
         <div className="grid w-full h-full grid-cols-3 grid-rows-4 py-12 font-bold text-black gap-y-10 justify-items-center">
@@ -53,6 +96,7 @@ function RouteComponent() {
               return (
                 <Button
                   key={item}
+                  disabled={loading}
                   variant="ghost"
                   size="otp"
                   onClick={() => setOTP(OTP.slice(0, -1))}
@@ -64,9 +108,10 @@ function RouteComponent() {
             return (
               <Button
                 key={item}
+                disabled={loading}
                 variant="ghost"
                 size="otp"
-                onClick={() => setOTP(OTP + item)}
+                onClick={() => setOTP((OTP + item).slice(0, 4))}
               >
                 {item}
               </Button>

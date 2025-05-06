@@ -1,5 +1,10 @@
 import React from 'react'
 
+import { Dialog } from '../Dialog'
+import { Stamp } from '../Stamp'
+
+import { Button } from '@/components/airbnbs/button'
+
 const ShopCardRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="flex flex-col w-full gap-6 px-3 py-3 bg-white shadow-xs rounded-2xl">
@@ -32,22 +37,67 @@ const ShopCardRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 const ShopCardStamp: React.FC = () => {
+  const [otp, setOTP] = React.useState<string>()
+  const [open, setOpen] = React.useState(false)
+
+  const onConfirm = () => {
+    // TODO: API 요청, 쿠폰 갯수 갱신, OTP 발급 및 설정
+    setOTP('1392')
+  }
+
   return (
-    <div className="flex flex-col shrink-0 justify-center items-start p-3 gap-2.5 h-[82px] bg-white shadow-md rounded-sm border-2 border-[#A22085]">
-      <div className="flex flex-row items-center w-full gap-1 p-0">
-        <span className="text-sm font-bold bg-gradient-to-r from-[#A22085] to-[#600F97] text-transparent bg-clip-text">
-          10개
-        </span>
-        <span className="text-xs font-medium bg-gradient-to-r from-[#A22085] to-[#600F97] text-transparent bg-clip-text">
-          ✓ 달성
-        </span>
-      </div>
-      <div className="w-full overflow-hidden text-ellipsis">
-        <span className="text-sm font-medium bg-gradient-to-r from-[#A22085] to-[#600F97] text-transparent bg-clip-text">
-          아메리카노 1잔
-        </span>
-      </div>
-    </div>
+    <Dialog open={open}>
+      <Dialog.Trigger
+        asChild
+        onClick={() => {
+          setOTP(undefined)
+          setOpen(true)
+        }}
+      >
+        <Stamp
+          count={10}
+          threshold={{ now: 10, prev: 0 }}
+          name="아메리카노 1잔"
+        />
+      </Dialog.Trigger>
+      {otp === undefined ? (
+        <Dialog.Content>
+          <Dialog.Title>정말 쿠폰을 소진하시겠어요?</Dialog.Title>
+          <Dialog.Description>소진 쿠폰 갯수는 "10개" 에요</Dialog.Description>
+
+          <Dialog.Footer className="flex flex-row justify-end w-full gap-2">
+            <Dialog.Close onClick={() => setOpen(false)}>
+              <Button variant="outline">취소</Button>
+            </Dialog.Close>
+            <Button variant="default" onClick={onConfirm}>
+              소진
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      ) : (
+        <Dialog.Content>
+          <Dialog.Title>OTP를 사장님께 전해주세요</Dialog.Title>
+          <Dialog.Description>
+            <div className="flex flex-row items-center justify-center w-full py-4">
+              {[...otp].map((v, i) => (
+                <span key={i} className="px-3 text-2xl font-bold">
+                  {v}
+                </span>
+              ))}
+            </div>
+
+            <div className="w-full font-light text-center text-md">
+              OTP가 클립보드에 복사되었어요!
+            </div>
+          </Dialog.Description>
+          <Dialog.Footer className="flex flex-row justify-end w-full gap-2">
+            <Dialog.Close onClick={() => setOpen(false)}>
+              <Button variant="default">닫기</Button>
+            </Dialog.Close>
+          </Dialog.Footer>
+        </Dialog.Content>
+      )}
+    </Dialog>
   )
 }
 
