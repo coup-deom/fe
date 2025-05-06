@@ -73,13 +73,13 @@ const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
         seamless ? undefined : 'inset-shadow-xs',
       )}
     >
-      <Link to="/signin">
+      <Link to="/trade">
         <CompareArrowIcon />
       </Link>
       <Link to="/">
         <HomeIcon />
       </Link>
-      <Link to="/signin">
+      <Link to="/mypage">
         <AccountBoxIcon />
       </Link>
     </div>

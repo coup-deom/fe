@@ -11,12 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TradeImport } from './routes/trade'
 import { Route as SigninImport } from './routes/signin'
 import { Route as OtpImport } from './routes/otp'
+import { Route as MypageImport } from './routes/mypage'
 import { Route as IndexImport } from './routes/index'
 import { Route as SigninCallbackImport } from './routes/signin/callback'
 
 // Create/Update Routes
+
+const TradeRoute = TradeImport.update({
+  id: '/trade',
+  path: '/trade',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const SigninRoute = SigninImport.update({
   id: '/signin',
@@ -27,6 +35,12 @@ const SigninRoute = SigninImport.update({
 const OtpRoute = OtpImport.update({
   id: '/otp',
   path: '/otp',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MypageRoute = MypageImport.update({
+  id: '/mypage',
+  path: '/mypage',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/mypage': {
+      id: '/mypage'
+      path: '/mypage'
+      fullPath: '/mypage'
+      preLoaderRoute: typeof MypageImport
+      parentRoute: typeof rootRoute
+    }
     '/otp': {
       id: '/otp'
       path: '/otp'
@@ -65,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/signin'
       fullPath: '/signin'
       preLoaderRoute: typeof SigninImport
+      parentRoute: typeof rootRoute
+    }
+    '/trade': {
+      id: '/trade'
+      path: '/trade'
+      fullPath: '/trade'
+      preLoaderRoute: typeof TradeImport
       parentRoute: typeof rootRoute
     }
     '/signin/callback': {
@@ -92,45 +120,68 @@ const SigninRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/mypage': typeof MypageRoute
   '/otp': typeof OtpRoute
   '/signin': typeof SigninRouteWithChildren
+  '/trade': typeof TradeRoute
   '/signin/callback': typeof SigninCallbackRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/mypage': typeof MypageRoute
   '/otp': typeof OtpRoute
   '/signin': typeof SigninRouteWithChildren
+  '/trade': typeof TradeRoute
   '/signin/callback': typeof SigninCallbackRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/mypage': typeof MypageRoute
   '/otp': typeof OtpRoute
   '/signin': typeof SigninRouteWithChildren
+  '/trade': typeof TradeRoute
   '/signin/callback': typeof SigninCallbackRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/otp' | '/signin' | '/signin/callback'
+  fullPaths:
+    | '/'
+    | '/mypage'
+    | '/otp'
+    | '/signin'
+    | '/trade'
+    | '/signin/callback'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/otp' | '/signin' | '/signin/callback'
-  id: '__root__' | '/' | '/otp' | '/signin' | '/signin/callback'
+  to: '/' | '/mypage' | '/otp' | '/signin' | '/trade' | '/signin/callback'
+  id:
+    | '__root__'
+    | '/'
+    | '/mypage'
+    | '/otp'
+    | '/signin'
+    | '/trade'
+    | '/signin/callback'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MypageRoute: typeof MypageRoute
   OtpRoute: typeof OtpRoute
   SigninRoute: typeof SigninRouteWithChildren
+  TradeRoute: typeof TradeRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MypageRoute: MypageRoute,
   OtpRoute: OtpRoute,
   SigninRoute: SigninRouteWithChildren,
+  TradeRoute: TradeRoute,
 }
 
 export const routeTree = rootRoute
@@ -144,12 +195,17 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/mypage",
         "/otp",
-        "/signin"
+        "/signin",
+        "/trade"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/mypage": {
+      "filePath": "mypage.tsx"
     },
     "/otp": {
       "filePath": "otp.tsx"
@@ -159,6 +215,9 @@ export const routeTree = rootRoute
       "children": [
         "/signin/callback"
       ]
+    },
+    "/trade": {
+      "filePath": "trade.tsx"
     },
     "/signin/callback": {
       "filePath": "signin/callback.tsx",
