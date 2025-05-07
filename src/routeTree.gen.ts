@@ -12,29 +12,23 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as TradeImport } from './routes/trade'
-import { Route as SigninImport } from './routes/signin'
-import { Route as OtpImport } from './routes/otp'
 import { Route as MypageImport } from './routes/mypage'
 import { Route as IndexImport } from './routes/index'
+import { Route as SigninIndexImport } from './routes/signin/index'
+import { Route as SigninChooseImport } from './routes/signin/choose'
 import { Route as SigninCallbackImport } from './routes/signin/callback'
+import { Route as OwnerOtpImport } from './routes/owner/otp'
+import { Route as OwnerMypageImport } from './routes/owner/mypage'
+import { Route as OwnerAnalysisImport } from './routes/owner/analysis'
+import { Route as OwnerEntryIndexImport } from './routes/owner/entry/index'
+import { Route as OwnerRequestRequestIDImport } from './routes/owner/request.$requestID'
+import { Route as OwnerEntryWaitingImport } from './routes/owner/entry/waiting'
 
 // Create/Update Routes
 
 const TradeRoute = TradeImport.update({
   id: '/trade',
   path: '/trade',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const SigninRoute = SigninImport.update({
-  id: '/signin',
-  path: '/signin',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const OtpRoute = OtpImport.update({
-  id: '/otp',
-  path: '/otp',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -50,10 +44,58 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const SigninIndexRoute = SigninIndexImport.update({
+  id: '/signin/',
+  path: '/signin/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SigninChooseRoute = SigninChooseImport.update({
+  id: '/signin/choose',
+  path: '/signin/choose',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const SigninCallbackRoute = SigninCallbackImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => SigninRoute,
+  id: '/signin/callback',
+  path: '/signin/callback',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerOtpRoute = OwnerOtpImport.update({
+  id: '/owner/otp',
+  path: '/owner/otp',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerMypageRoute = OwnerMypageImport.update({
+  id: '/owner/mypage',
+  path: '/owner/mypage',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerAnalysisRoute = OwnerAnalysisImport.update({
+  id: '/owner/analysis',
+  path: '/owner/analysis',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerEntryIndexRoute = OwnerEntryIndexImport.update({
+  id: '/owner/entry/',
+  path: '/owner/entry/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerRequestRequestIDRoute = OwnerRequestRequestIDImport.update({
+  id: '/owner/request/$requestID',
+  path: '/owner/request/$requestID',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const OwnerEntryWaitingRoute = OwnerEntryWaitingImport.update({
+  id: '/owner/entry/waiting',
+  path: '/owner/entry/waiting',
+  getParentRoute: () => rootRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -74,20 +116,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MypageImport
       parentRoute: typeof rootRoute
     }
-    '/otp': {
-      id: '/otp'
-      path: '/otp'
-      fullPath: '/otp'
-      preLoaderRoute: typeof OtpImport
-      parentRoute: typeof rootRoute
-    }
-    '/signin': {
-      id: '/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof SigninImport
-      parentRoute: typeof rootRoute
-    }
     '/trade': {
       id: '/trade'
       path: '/trade'
@@ -95,55 +123,118 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TradeImport
       parentRoute: typeof rootRoute
     }
+    '/owner/analysis': {
+      id: '/owner/analysis'
+      path: '/owner/analysis'
+      fullPath: '/owner/analysis'
+      preLoaderRoute: typeof OwnerAnalysisImport
+      parentRoute: typeof rootRoute
+    }
+    '/owner/mypage': {
+      id: '/owner/mypage'
+      path: '/owner/mypage'
+      fullPath: '/owner/mypage'
+      preLoaderRoute: typeof OwnerMypageImport
+      parentRoute: typeof rootRoute
+    }
+    '/owner/otp': {
+      id: '/owner/otp'
+      path: '/owner/otp'
+      fullPath: '/owner/otp'
+      preLoaderRoute: typeof OwnerOtpImport
+      parentRoute: typeof rootRoute
+    }
     '/signin/callback': {
       id: '/signin/callback'
-      path: '/callback'
+      path: '/signin/callback'
       fullPath: '/signin/callback'
       preLoaderRoute: typeof SigninCallbackImport
-      parentRoute: typeof SigninImport
+      parentRoute: typeof rootRoute
+    }
+    '/signin/choose': {
+      id: '/signin/choose'
+      path: '/signin/choose'
+      fullPath: '/signin/choose'
+      preLoaderRoute: typeof SigninChooseImport
+      parentRoute: typeof rootRoute
+    }
+    '/signin/': {
+      id: '/signin/'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/owner/entry/waiting': {
+      id: '/owner/entry/waiting'
+      path: '/owner/entry/waiting'
+      fullPath: '/owner/entry/waiting'
+      preLoaderRoute: typeof OwnerEntryWaitingImport
+      parentRoute: typeof rootRoute
+    }
+    '/owner/request/$requestID': {
+      id: '/owner/request/$requestID'
+      path: '/owner/request/$requestID'
+      fullPath: '/owner/request/$requestID'
+      preLoaderRoute: typeof OwnerRequestRequestIDImport
+      parentRoute: typeof rootRoute
+    }
+    '/owner/entry/': {
+      id: '/owner/entry/'
+      path: '/owner/entry'
+      fullPath: '/owner/entry'
+      preLoaderRoute: typeof OwnerEntryIndexImport
+      parentRoute: typeof rootRoute
     }
   }
 }
 
 // Create and export the route tree
 
-interface SigninRouteChildren {
-  SigninCallbackRoute: typeof SigninCallbackRoute
-}
-
-const SigninRouteChildren: SigninRouteChildren = {
-  SigninCallbackRoute: SigninCallbackRoute,
-}
-
-const SigninRouteWithChildren =
-  SigninRoute._addFileChildren(SigninRouteChildren)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/mypage': typeof MypageRoute
-  '/otp': typeof OtpRoute
-  '/signin': typeof SigninRouteWithChildren
   '/trade': typeof TradeRoute
+  '/owner/analysis': typeof OwnerAnalysisRoute
+  '/owner/mypage': typeof OwnerMypageRoute
+  '/owner/otp': typeof OwnerOtpRoute
   '/signin/callback': typeof SigninCallbackRoute
+  '/signin/choose': typeof SigninChooseRoute
+  '/signin': typeof SigninIndexRoute
+  '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
+  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
+  '/owner/entry': typeof OwnerEntryIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/mypage': typeof MypageRoute
-  '/otp': typeof OtpRoute
-  '/signin': typeof SigninRouteWithChildren
   '/trade': typeof TradeRoute
+  '/owner/analysis': typeof OwnerAnalysisRoute
+  '/owner/mypage': typeof OwnerMypageRoute
+  '/owner/otp': typeof OwnerOtpRoute
   '/signin/callback': typeof SigninCallbackRoute
+  '/signin/choose': typeof SigninChooseRoute
+  '/signin': typeof SigninIndexRoute
+  '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
+  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
+  '/owner/entry': typeof OwnerEntryIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/mypage': typeof MypageRoute
-  '/otp': typeof OtpRoute
-  '/signin': typeof SigninRouteWithChildren
   '/trade': typeof TradeRoute
+  '/owner/analysis': typeof OwnerAnalysisRoute
+  '/owner/mypage': typeof OwnerMypageRoute
+  '/owner/otp': typeof OwnerOtpRoute
   '/signin/callback': typeof SigninCallbackRoute
+  '/signin/choose': typeof SigninChooseRoute
+  '/signin/': typeof SigninIndexRoute
+  '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
+  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
+  '/owner/entry/': typeof OwnerEntryIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -151,37 +242,75 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/mypage'
-    | '/otp'
-    | '/signin'
     | '/trade'
+    | '/owner/analysis'
+    | '/owner/mypage'
+    | '/owner/otp'
     | '/signin/callback'
+    | '/signin/choose'
+    | '/signin'
+    | '/owner/entry/waiting'
+    | '/owner/request/$requestID'
+    | '/owner/entry'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/mypage' | '/otp' | '/signin' | '/trade' | '/signin/callback'
+  to:
+    | '/'
+    | '/mypage'
+    | '/trade'
+    | '/owner/analysis'
+    | '/owner/mypage'
+    | '/owner/otp'
+    | '/signin/callback'
+    | '/signin/choose'
+    | '/signin'
+    | '/owner/entry/waiting'
+    | '/owner/request/$requestID'
+    | '/owner/entry'
   id:
     | '__root__'
     | '/'
     | '/mypage'
-    | '/otp'
-    | '/signin'
     | '/trade'
+    | '/owner/analysis'
+    | '/owner/mypage'
+    | '/owner/otp'
     | '/signin/callback'
+    | '/signin/choose'
+    | '/signin/'
+    | '/owner/entry/waiting'
+    | '/owner/request/$requestID'
+    | '/owner/entry/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MypageRoute: typeof MypageRoute
-  OtpRoute: typeof OtpRoute
-  SigninRoute: typeof SigninRouteWithChildren
   TradeRoute: typeof TradeRoute
+  OwnerAnalysisRoute: typeof OwnerAnalysisRoute
+  OwnerMypageRoute: typeof OwnerMypageRoute
+  OwnerOtpRoute: typeof OwnerOtpRoute
+  SigninCallbackRoute: typeof SigninCallbackRoute
+  SigninChooseRoute: typeof SigninChooseRoute
+  SigninIndexRoute: typeof SigninIndexRoute
+  OwnerEntryWaitingRoute: typeof OwnerEntryWaitingRoute
+  OwnerRequestRequestIDRoute: typeof OwnerRequestRequestIDRoute
+  OwnerEntryIndexRoute: typeof OwnerEntryIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MypageRoute: MypageRoute,
-  OtpRoute: OtpRoute,
-  SigninRoute: SigninRouteWithChildren,
   TradeRoute: TradeRoute,
+  OwnerAnalysisRoute: OwnerAnalysisRoute,
+  OwnerMypageRoute: OwnerMypageRoute,
+  OwnerOtpRoute: OwnerOtpRoute,
+  SigninCallbackRoute: SigninCallbackRoute,
+  SigninChooseRoute: SigninChooseRoute,
+  SigninIndexRoute: SigninIndexRoute,
+  OwnerEntryWaitingRoute: OwnerEntryWaitingRoute,
+  OwnerRequestRequestIDRoute: OwnerRequestRequestIDRoute,
+  OwnerEntryIndexRoute: OwnerEntryIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -196,9 +325,16 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/mypage",
-        "/otp",
-        "/signin",
-        "/trade"
+        "/trade",
+        "/owner/analysis",
+        "/owner/mypage",
+        "/owner/otp",
+        "/signin/callback",
+        "/signin/choose",
+        "/signin/",
+        "/owner/entry/waiting",
+        "/owner/request/$requestID",
+        "/owner/entry/"
       ]
     },
     "/": {
@@ -207,21 +343,35 @@ export const routeTree = rootRoute
     "/mypage": {
       "filePath": "mypage.tsx"
     },
-    "/otp": {
-      "filePath": "otp.tsx"
-    },
-    "/signin": {
-      "filePath": "signin.tsx",
-      "children": [
-        "/signin/callback"
-      ]
-    },
     "/trade": {
       "filePath": "trade.tsx"
     },
+    "/owner/analysis": {
+      "filePath": "owner/analysis.tsx"
+    },
+    "/owner/mypage": {
+      "filePath": "owner/mypage.tsx"
+    },
+    "/owner/otp": {
+      "filePath": "owner/otp.tsx"
+    },
     "/signin/callback": {
-      "filePath": "signin/callback.tsx",
-      "parent": "/signin"
+      "filePath": "signin/callback.tsx"
+    },
+    "/signin/choose": {
+      "filePath": "signin/choose.tsx"
+    },
+    "/signin/": {
+      "filePath": "signin/index.tsx"
+    },
+    "/owner/entry/waiting": {
+      "filePath": "owner/entry/waiting.tsx"
+    },
+    "/owner/request/$requestID": {
+      "filePath": "owner/request.$requestID.tsx"
+    },
+    "/owner/entry/": {
+      "filePath": "owner/entry/index.tsx"
     }
   }
 }

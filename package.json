@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:normal": "VITE_DEV_USER=normal-mock-user vite",
+    "dev:owner": "VITE_DEV_USER=owner-mock-user vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",

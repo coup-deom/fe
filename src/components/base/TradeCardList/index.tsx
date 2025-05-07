@@ -16,7 +16,13 @@ import {
 } from '@/components/airbnbs/select'
 import { Stepper } from '@/components/airbnbs/stepper'
 
-const TradeCardListRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
+interface Props {
+  noInteraction?: boolean
+}
+const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
+  children,
+  noInteraction,
+}) => {
   const [fromCount, setFromCount] = useState(0)
   const [toCount, setToCount] = useState(0)
   const [fromShop, setFromShop] = useState<string>()
@@ -36,99 +42,103 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
   return (
     <div className="flex flex-col w-full gap-2">
       {children}
-      <div className="fixed right-0 mb-2 mr-2 bottom-16 pb-safe">
-        <Dialog onOpenChange={v => v === false && onClose()}>
-          <Dialog.Trigger asChild>
-            <Button variant="secondary" rounded="full" size="icon">
-              <PlusIcon />
-            </Button>
-          </Dialog.Trigger>
-          <Dialog.Content>
-            <Dialog.Title>
-              <div className="flex flex-row items-center justify-between w-full h-[24px]">
-                <span className="text-lg font-bold">쿠폰 거래 등록</span>
-                <CheckIcon onClick={() => onSubmit()} />
-              </div>
-            </Dialog.Title>
-            <div className="flex flex-col w-full gap-6 bg-white shadow-xs rounded-2xl">
-              <div className="flex flex-col items-start w-full gap-6 p-0">
-                <div className="flex flex-col items-start w-full gap-3">
-                  <div className="w-full font-bold text-md leading-[21px] text-black">
-                    내가 가진 쿠폰
+      {!noInteraction && (
+        <div className="fixed z-50 right-0 mb-2 mr-2 bottom-16 pb-safe">
+          <Dialog onOpenChange={v => v === false && onClose()}>
+            <Dialog.Trigger asChild>
+              <Button variant="secondary" rounded="full" size="icon">
+                <PlusIcon />
+              </Button>
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <Dialog.Title>
+                <div className="flex flex-row items-center justify-between w-full h-[24px]">
+                  <span className="text-lg font-bold">쿠폰 거래 등록</span>
+                  <CheckIcon onClick={() => onSubmit()} />
+                </div>
+              </Dialog.Title>
+              <div className="flex flex-col w-full gap-6 bg-white shadow-xs rounded-2xl">
+                <div className="flex flex-col items-start w-full gap-6 p-0">
+                  <div className="flex flex-col items-start w-full gap-3">
+                    <div className="w-full font-bold text-md leading-[21px] text-black">
+                      내가 가진 쿠폰
+                    </div>
+                    <div className="w-full h-4 text-xs font-medium text-black leading-md">
+                      {/* TODO: 내가 쿠폰을 가지고 있는 가게 목록 */}
+                      <Select value={fromShop} onValueChange={setFromShop}>
+                        <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
+                          <SelectValue placeholder="가게를 선택해주세요" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="starbucks">스타벅스</SelectItem>
+                          <SelectItem value="twosomeplace">
+                            투썸플레이스
+                          </SelectItem>
+                          <SelectItem value="coffeebean">커피빈</SelectItem>
+                          <SelectItem value="ediya">이디야 커피</SelectItem>
+                          <SelectItem value="paulbassett">폴 바셋</SelectItem>
+                          <SelectItem value="angelinus">엔제리너스</SelectItem>
+                          <SelectItem value="gongcha">공차</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-row items-center justify-between w-full pt-6 text-black text-md whitespace-nowrap leading-md">
+                      스탬프 개수
+                      <div>
+                        <Stepper
+                          value={fromCount}
+                          onChange={setFromCount}
+                          formatter={v => v}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="w-full h-4 text-xs font-medium text-black leading-md">
-                    {/* TODO: 내가 쿠폰을 가지고 있는 가게 목록 */}
-                    <Select value={fromShop} onValueChange={setFromShop}>
-                      <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
-                        <SelectValue placeholder="가게를 선택해주세요" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="starbucks">스타벅스</SelectItem>
-                        <SelectItem value="twosomeplace">
-                          투썸플레이스
-                        </SelectItem>
-                        <SelectItem value="coffeebean">커피빈</SelectItem>
-                        <SelectItem value="ediya">이디야 커피</SelectItem>
-                        <SelectItem value="paulbassett">폴 바셋</SelectItem>
-                        <SelectItem value="angelinus">엔제리너스</SelectItem>
-                        <SelectItem value="gongcha">공차</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex flex-row items-center justify-between w-full pt-6 text-black text-md whitespace-nowrap leading-md">
-                    스탬프 개수
-                    <div>
-                      <Stepper
-                        value={fromCount}
-                        onChange={setFromCount}
-                        formatter={v => v}
-                      />
+                  <div className="flex flex-col items-start flex-grow w-full gap-3">
+                    <div className="w-full font-bold text-md leading-[21px] text-black">
+                      교환을 원하는 쿠폰
+                    </div>
+                    <div className="w-full h-4 text-xs font-medium text-black leading-md">
+                      {/* TODO: 전체 가게 목록 | 위에서 선택한 건 제외하고 고를 수 있게끔 FE 처리 */}
+                      <Select value={toShop} onValueChange={setToShop}>
+                        <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
+                          <SelectValue placeholder="가게를 선택해주세요" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="starbucks">스타벅스</SelectItem>
+                          <SelectItem value="twosomeplace">
+                            투썸플레이스
+                          </SelectItem>
+                          <SelectItem value="coffeebean">커피빈</SelectItem>
+                          <SelectItem value="ediya">이디야 커피</SelectItem>
+                          <SelectItem value="paulbassett">폴 바셋</SelectItem>
+                          <SelectItem value="angelinus">엔제리너스</SelectItem>
+                          <SelectItem value="gongcha">공차</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex flex-row items-center justify-between w-full pt-6 text-black text-md whitespace-nowrap leading-md">
+                      스탬프 개수
+                      <div>
+                        <Stepper
+                          value={toCount}
+                          onChange={setToCount}
+                          formatter={v => v}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-start flex-grow w-full gap-3">
-                  <div className="w-full font-bold text-md leading-[21px] text-black">
-                    교환을 원하는 쿠폰
-                  </div>
-                  <div className="w-full h-4 text-xs font-medium text-black leading-md">
-                    {/* TODO: 전체 가게 목록 | 위에서 선택한 건 제외하고 고를 수 있게끔 FE 처리 */}
-                    <Select value={toShop} onValueChange={setToShop}>
-                      <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
-                        <SelectValue placeholder="가게를 선택해주세요" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="starbucks">스타벅스</SelectItem>
-                        <SelectItem value="twosomeplace">
-                          투썸플레이스
-                        </SelectItem>
-                        <SelectItem value="coffeebean">커피빈</SelectItem>
-                        <SelectItem value="ediya">이디야 커피</SelectItem>
-                        <SelectItem value="paulbassett">폴 바셋</SelectItem>
-                        <SelectItem value="angelinus">엔제리너스</SelectItem>
-                        <SelectItem value="gongcha">공차</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex flex-row items-center justify-between w-full pt-6 text-black text-md whitespace-nowrap leading-md">
-                    스탬프 개수
-                    <div>
-                      <Stepper
-                        value={toCount}
-                        onChange={setToCount}
-                        formatter={v => v}
-                      />
-                    </div>
-                  </div>
-                </div>
               </div>
-            </div>
-          </Dialog.Content>
-        </Dialog>
-      </div>
+            </Dialog.Content>
+          </Dialog>
+        </div>
+      )}
     </div>
   )
 }
 interface TradeCardItemProps {
+  status?: 'pending' | 'completed' | 'canceled'
+  noInteraction?: boolean
   // createdAt: Date
   mode?: 'edit' | 'view'
   // TODO:
@@ -149,6 +159,8 @@ interface TradeCardItemProps {
   // }
 }
 const TradeCardItem: React.FC<TradeCardItemProps> = ({
+  status,
+  noInteraction,
   mode,
   onModeChange,
 }) => {
@@ -164,7 +176,29 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
           {createdAt.toISOString().slice(0, 10).replaceAll('-', '. ')}
         </span>
 
-        {mode !== undefined &&
+        {(() => {
+          switch (status) {
+            case 'completed':
+              return (
+                <span className="text-sm font-bold text-[#22CC88]">완료됨</span>
+              )
+            case 'canceled':
+              return (
+                <span className="text-sm font-bold text-[#FF3D00]">취소됨</span>
+              )
+            case 'pending':
+              return (
+                <span className="text-sm font-bold text-[#FFB800]">
+                  진행 중
+                </span>
+              )
+            default:
+              return null
+          }
+        })()}
+
+        {!noInteraction &&
+          mode !== undefined &&
           (mode === 'edit' ? (
             <CheckIcon onClick={() => onModeChange?.('view')} />
           ) : (

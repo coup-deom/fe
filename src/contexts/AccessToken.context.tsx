@@ -7,7 +7,9 @@ const Context = createContext<string | null>(null)
 export const AccessTokenProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const accessToken = import.meta.env.DEV ? 'dev-user' : window.localStorage.getItem('access_token')
+  const accessToken = import.meta.env.VITE_DEV_USER
+    ? import.meta.env.VITE_DEV_USER
+    : window.localStorage.getItem('access_token')
   const navigate = useNavigate()
   if (!accessToken) {
     navigate({ to: '/signin' })
@@ -24,4 +26,19 @@ export function withAccessToken(Component: React.FC): React.FC {
       <Component />
     </AccessTokenProvider>
   )
+}
+
+export function withoutAccessToken(): void {
+  const accessToken = import.meta.env.VITE_DEV_USER
+    ? import.meta.env.VITE_DEV_USER
+    : window.localStorage.getItem('access_token')
+  if (accessToken) {
+    window.location.href = import.meta.env.VITE_HOST
+  }
+}
+
+export function useIsOwner(): boolean {
+  const accessToken = useAccessToken()
+
+  return accessToken === 'owner-mock-user'
 }

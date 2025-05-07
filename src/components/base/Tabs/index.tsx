@@ -34,8 +34,8 @@ const TabsRoot: React.FC<Props> = ({ data, value, onChange }) => {
             tabIndex={item.value === value ? 0 : -1}
             aria-selected={item.value === value}
             className={cn(
-              'data-[state=active]:border-b-1 border-black inline-flex flex-1 items-center justify-center px-2.5 py-1 text-md whitespace-nowrap transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none',
-              'w-full',
+              'border-b-2 inline-flex flex-1 items-center justify-center px-2.5 py-1 text-md whitespace-nowrap transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none',
+              'w-full font-bold data-[state=active]:text-black data-[state=active]:border-black data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500',
             )}
           >
             {item.label}
@@ -51,7 +51,9 @@ const TabsWithWrapper: React.FC<
 > = ({ className, children, ...props }) => {
   return (
     <div className={cn('pt-15')}>
-      <div className={cn('fixed left-0 right-0 shadow-md top-16', className)}>
+      <div
+        className={cn('fixed z-50 left-0 right-0 shadow-md top-16', className)}
+      >
         <TabsRoot {...props} />
       </div>
       {children}

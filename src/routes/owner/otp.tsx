@@ -6,14 +6,14 @@ import { Button } from '@/components/airbnbs/button'
 import { DeleteIcon } from '@/components/base/svgs/DeleteIcon'
 import { MinusIcon } from '@/components/base/svgs/MinusIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
+import { withAccessToken } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
-export const Route = createFileRoute('/otp')({
-  component: RouteComponent,
-  beforeLoad: () => null,
+export const Route = createFileRoute('/owner/otp')({
+  component: withAccessToken(OTP),
 })
 
-function RouteComponent() {
+function OTP() {
   const [OTP, setOTP] = useState('')
   const [loading, setLoading] = useState(false)
   const [isValid, setIsValid] = useState<boolean>()

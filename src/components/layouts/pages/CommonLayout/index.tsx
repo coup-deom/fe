@@ -3,8 +3,12 @@ import React, { PropsWithChildren } from 'react'
 import { Link } from '@tanstack/react-router'
 
 import { AccountBoxIcon } from '@/components/base/svgs/AccountBoxIcon'
+import { ChartIcon } from '@/components/base/svgs/ChartIcon'
+import { CodeIcon } from '@/components/base/svgs/CodeIcon'
 import { CompareArrowIcon } from '@/components/base/svgs/CompareArrowIcon'
+import { CouponIcon } from '@/components/base/svgs/CouponIcon'
 import { HomeIcon } from '@/components/base/svgs/HomeIcon'
+import { useIsOwner } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -33,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ title, seamless }) => {
   return (
     <div
       className={cn(
-        'fixed top-0 flex flex-row items-center justify-between w-full h-16 px-4 py-5 bg-white',
+        'fixed z-50 top-0 flex flex-row items-center justify-between w-full h-16 px-4 py-5 bg-white',
         seamless ? undefined : 'shadow-md',
       )}
     >
@@ -66,21 +70,46 @@ interface BottomNavigationBarProps {
 const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
   seamless,
 }) => {
+  const isOwner = useIsOwner()
+
+  if (isOwner) {
+    return (
+      <div
+        className={cn(
+          'fixed z-50 bottom-0 flex flex-row items-center justify-around w-full h-16 px-4 bg-white',
+          seamless ? undefined : 'inset-shadow-xs',
+        )}
+      >
+        <Link to="/owner/analysis">
+          <ChartIcon className="text-black" />
+        </Link>
+        <Link to="/owner/otp">
+          <CodeIcon className="text-black" />
+        </Link>
+        <Link to="/">
+          <CouponIcon className="text-black" />
+        </Link>
+        <Link to="/owner/mypage">
+          <AccountBoxIcon className="text-black" />
+        </Link>
+      </div>
+    )
+  }
   return (
     <div
       className={cn(
-        'fixed bottom-0 flex flex-row items-center justify-around w-full h-16 px-4 bg-white',
+        'fixed z-50 bottom-0 flex flex-row items-center justify-around w-full h-16 px-4 bg-white',
         seamless ? undefined : 'inset-shadow-xs',
       )}
     >
       <Link to="/trade">
-        <CompareArrowIcon />
+        <CompareArrowIcon className="text-black" />
       </Link>
       <Link to="/">
-        <HomeIcon />
+        <HomeIcon className="text-black" />
       </Link>
       <Link to="/mypage">
-        <AccountBoxIcon />
+        <AccountBoxIcon className="text-black" />
       </Link>
     </div>
   )
