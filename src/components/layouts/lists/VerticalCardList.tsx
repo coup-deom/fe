@@ -1,7 +1,15 @@
 import React from 'react'
 
-export const VerticalCardList: React.FC<React.PropsWithChildren> = ({
+import { cn } from '@/lib/utils'
+
+interface Props {
+  className?: string
+}
+export const VerticalCardList: React.FC<React.PropsWithChildren<Props>> = ({
   children,
+  className,
 }) => {
-  return <div className="flex flex-col gap-4 py-4">{children}</div>
+  return (
+    <div className={cn('flex flex-col gap-4 py-4', className)}>{children}</div>
+  )
 }

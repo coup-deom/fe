@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { FullScreenLayout } from '@/components/layouts/pages/FullScreenLayout'
+import { withoutAccessToken } from '@/contexts/AccessToken.context'
 
-export const Route = createFileRoute('/signin')({
+export const Route = createFileRoute('/signin/')({
+  beforeLoad: withoutAccessToken,
   component: RouteComponent,
-  beforeLoad: () => null,
 })
 
 function RouteComponent() {
@@ -27,7 +28,7 @@ function RouteComponent() {
             ></img>
           </Link>
           <Link
-            to={import.meta.env.VITE_API_HOST + '/oauth2/authorization/kakao'}
+            to={import.meta.env.VITE_API_HOST + '/oauth2/authorization/naver'}
           >
             <img
               className="rounded-full border-1 shadow-2xs aspect-square"
@@ -37,7 +38,7 @@ function RouteComponent() {
             ></img>
           </Link>
           <Link
-            to={import.meta.env.VITE_API_HOST + '/oauth2/authorization/naver'}
+            to={import.meta.env.VITE_API_HOST + '/oauth2/authorization/kakao'}
           >
             <img
               className="rounded-full border-1 shadow-2xs aspect-square"

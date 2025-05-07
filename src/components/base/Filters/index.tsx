@@ -28,7 +28,7 @@ const FiltersRoot: React.FC<React.PropsWithChildren<Props>> = ({
 
   return (
     <div className="flex w-full overflow-y-hidden shadow-md h-15">
-      <div className="flex flex-row items-center justify-start w-full gap-3 px-4 pb-4 overflow-x-auto overflow-y-hidden bg-white h-18 flex-nowrap">
+      <div className="flex flex-row items-center justify-start w-full gap-3 px-4 pt-2 pb-4 overflow-x-auto overflow-y-hidden bg-white h-18 flex-nowrap">
         {options.map(opt => (
           <span
             key={opt.value}
@@ -53,7 +53,9 @@ const FiltersWithWrapper: React.FC<
 > = ({ className, children, ...props }) => {
   return (
     <div className={cn('pt-15')}>
-      <div className={cn('fixed left-0 right-0 shadow-md top-16', className)}>
+      <div
+        className={cn('fixed z-50 left-0 right-0 shadow-md top-16', className)}
+      >
         <Filters {...props} />
       </div>
       {children}
