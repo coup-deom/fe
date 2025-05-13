@@ -33,43 +33,103 @@ function Index() {
           <VerticalCardList>
             <ShopCard>
               {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
+              <ShopCard.Stamp
+                count={10}
+                name="쿠키 한개"
+                threshold={{ now: 5, prev: 0 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="아메리카노 한잔"
+                threshold={{ now: 10, prev: 5 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="카페라떼 한잔"
+                threshold={{ now: 15, prev: 10 }}
+              />
             </ShopCard>
             <ShopCard>
               {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
+              <ShopCard.Stamp
+                count={10}
+                name="아메리카노 한잔"
+                threshold={{ now: 10, prev: 0 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="카페라떼 한잔"
+                threshold={{ now: 15, prev: 10 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="마카롱 세개"
+                threshold={{ now: 20, prev: 15 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="조각케이크 하나"
+                threshold={{ now: 30, prev: 20 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="홀케이크 하나"
+                threshold={{ now: 50, prev: 30 }}
+              />
             </ShopCard>
             <ShopCard>
               {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
+              <ShopCard.Stamp
+                count={10}
+                name="쿠키 한개"
+                threshold={{ now: 5, prev: 0 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="아메리카노 한잔"
+                threshold={{ now: 10, prev: 5 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="카페라떼 한잔"
+                threshold={{ now: 15, prev: 10 }}
+              />
             </ShopCard>
             <ShopCard>
               {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
+              <ShopCard.Stamp
+                count={10}
+                name="쿠키 한개"
+                threshold={{ now: 5, prev: 0 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="아메리카노 한잔"
+                threshold={{ now: 10, prev: 5 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="카페라떼 한잔"
+                threshold={{ now: 15, prev: 10 }}
+              />
             </ShopCard>
             <ShopCard>
               {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
-              <ShopCard.Stamp />
+              <ShopCard.Stamp
+                count={10}
+                name="쿠키 한개"
+                threshold={{ now: 5, prev: 0 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="아메리카노 한잔"
+                threshold={{ now: 10, prev: 5 }}
+              />
+              <ShopCard.Stamp
+                count={10}
+                name="카페라떼 한잔"
+                threshold={{ now: 15, prev: 10 }}
+              />
             </ShopCard>
           </VerticalCardList>
         </SearchFilter.WithWrapper>
