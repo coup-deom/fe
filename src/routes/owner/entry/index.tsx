@@ -10,7 +10,7 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/owner/entry/')({
-  component: withAccessToken(Entry),
+  component: withAccessToken(Entry, 'OWNER'),
 })
 
 const required = <span className="text-[#DD3F57]">필수</span>

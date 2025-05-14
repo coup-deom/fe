@@ -5,7 +5,7 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/owner/entry/waiting')({
-  component: withAccessToken(EntryWaiting),
+  component: withAccessToken(EntryWaiting, 'OWNER'),
 })
 
 function EntryWaiting() {

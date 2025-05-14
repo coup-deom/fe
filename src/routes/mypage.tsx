@@ -14,7 +14,7 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/mypage')({
-  component: withAccessToken(MyPage),
+  component: withAccessToken(MyPage, 'NORMAL'),
 })
 
 function MyPage() {

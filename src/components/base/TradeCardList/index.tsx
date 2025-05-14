@@ -43,7 +43,7 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
     <div className="flex flex-col w-full gap-2">
       {children}
       {!noInteraction && (
-        <div className="fixed z-50 right-0 mb-2 mr-2 bottom-16 pb-safe">
+        <div className="fixed right-0 z-50 mb-2 mr-2 bottom-16 pb-safe">
           <Dialog onOpenChange={v => v === false && onClose()}>
             <Dialog.Trigger asChild>
               <Button variant="secondary" rounded="full" size="icon">
@@ -170,7 +170,7 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
   const [toCount, setToCount] = useState(0)
 
   return (
-    <div className="flex flex-col w-full gap-6 px-4 py-4 bg-white shadow-xs rounded-2xl">
+    <div className="flex flex-col w-full gap-6 px-4 py-4 text-left bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row items-center justify-between w-full h-[24px]">
         <span className="text-sm font-bold">
           {createdAt.toISOString().slice(0, 10).replaceAll('-', '. ')}

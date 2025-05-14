@@ -6,7 +6,7 @@ import { FullScreenLayout } from '@/components/layouts/pages/FullScreenLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/signin/choose')({
-  component: withAccessToken(Choose),
+  component: withAccessToken(Choose, 'PENDING'),
 })
 
 function Choose() {
