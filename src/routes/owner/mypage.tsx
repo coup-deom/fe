@@ -13,14 +13,18 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/owner/mypage')({
-  component: withAccessToken(MyPage),
+  component: withAccessToken(MyPage, 'OWNER'),
 })
 
 function MyPage() {
   const nickname = '황금사장'
   const social = '구글'
   const onSignout = () => {
+    window.localStorage.removeItem('raw_access_token')
     window.localStorage.removeItem('access_token')
+    window.localStorage.removeItem('id_token')
+    window.localStorage.removeItem('signed_version')
+
     queueMicrotask(() => window.history.replaceState({}, '', '/'))
   }
   const onWithdrawal = () => {}

@@ -12,7 +12,7 @@ import { Dialog } from '@/components/base/Dialog'
 import { Button } from '@/components/airbnbs/button'
 
 export const Route = createFileRoute('/trade')({
-  component: withAccessToken(Trade),
+  component: withAccessToken(Trade, 'CUSTOMER'),
 })
 
 function Trade() {

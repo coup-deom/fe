@@ -10,7 +10,7 @@ import { withAccessToken } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/analysis')({
-  component: withAccessToken(Analysis),
+  component: withAccessToken(Analysis, 'OWNER'),
 })
 
 function Analysis() {

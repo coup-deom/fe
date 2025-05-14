@@ -10,7 +10,7 @@ import { withAccessToken } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/request/$requestID')({
-  component: withAccessToken(Request),
+  component: withAccessToken(Request, 'OWNER'),
 })
 
 async function fetchData(requestID: string) {

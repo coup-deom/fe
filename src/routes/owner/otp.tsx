@@ -10,7 +10,7 @@ import { withAccessToken } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/otp')({
-  component: withAccessToken(OTP),
+  component: withAccessToken(OTP, 'OWNER'),
 })
 
 function OTP() {

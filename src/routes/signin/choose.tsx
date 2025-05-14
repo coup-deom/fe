@@ -1,25 +1,43 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
+import { useStoresAllQuery } from '@/apis/caches/stores/all'
+import { useSetUserRoleMutation } from '@/apis/caches/user/role'
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
 import { FullScreenLayout } from '@/components/layouts/pages/FullScreenLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  Role,
+  useAccessToken,
+  withAccessToken,
+} from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/signin/choose')({
-  component: withAccessToken(Choose),
+  component: withAccessToken(Choose, 'PENDING'),
 })
 
 function Choose() {
+  const { update, idToken } = useAccessToken()
   const navigate = useNavigate({
     from: '/signin/choose',
   })
-  const onSubmit = (t: 'normal' | 'owner') => {
-    console.log('제출', t)
 
-    navigate({
-      to: '/',
-    })
+  const mutation = useSetUserRoleMutation()
+  const query = useStoresAllQuery()
+  console.log(query.data)
+  const onSubmit = async (role: Extract<Role, 'OWNER' | 'CUSTOMER'>) => {
+    mutation.mutateAsync(
+      { role },
+      {
+        onSuccess: () => {
+          update('id_token', { idToken: { ...idToken, role } })
+          navigate({
+            to: '/',
+          })
+        },
+      },
+    )
   }
+
   return (
     <FullScreenLayout>
       <div className="flex flex-col items-center justify-center w-full h-full gap-8 px-12">
@@ -53,7 +71,7 @@ function Choose() {
                 <Button variant="outline">취소</Button>
               </Dialog.Close>
               <Dialog.Close>
-                <Button variant="primary" onClick={() => onSubmit('normal')}>
+                <Button variant="primary" onClick={() => onSubmit('CUSTOMER')}>
                   확인
                 </Button>
               </Dialog.Close>
@@ -87,7 +105,7 @@ function Choose() {
                 <Button variant="outline">취소</Button>
               </Dialog.Close>
               <Dialog.Close>
-                <Button variant="primary" onClick={() => onSubmit('owner')}>
+                <Button variant="primary" onClick={() => onSubmit('OWNER')}>
                   확인
                 </Button>
               </Dialog.Close>
