@@ -14,7 +14,7 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/mypage')({
-  component: withAccessToken(MyPage, 'NORMAL'),
+  component: withAccessToken(MyPage, 'CUSTOMER'),
 })
 
 function MyPage() {
@@ -77,7 +77,11 @@ const Requests: React.FC = () => {
 
 const Settings: React.FC = () => {
   const onSignout = () => {
+    window.localStorage.removeItem('raw_access_token')
     window.localStorage.removeItem('access_token')
+    window.localStorage.removeItem('id_token')
+    window.localStorage.removeItem('signed_version')
+
     queueMicrotask(() => window.history.replaceState({}, '', '/'))
   }
 

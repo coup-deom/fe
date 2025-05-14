@@ -6,7 +6,7 @@ import {
   withoutAccessToken,
 } from '@/contexts/AccessToken.context'
 
-function decodeJWT<T>(token: string): T | null {
+export function decodeJWT<T>(token: string): T | null {
   try {
     const base64Url = token.split('.')[1]
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')

@@ -1,8 +1,10 @@
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useRef, useState } from 'react'
 
 import { useNavigate } from '@tanstack/react-router'
 
-export type Role = 'PENDING' | 'NORMAL' | 'OWNER'
+import { decodeJWT } from '@/routes/signin/callback'
+
+export type Role = 'PENDING' | 'CUSTOMER' | 'OWNER'
 export interface AccessToken {
   sub: string
   iat: number
@@ -15,14 +17,35 @@ export interface IDToken {
   iat: number
   exp: number
 }
-const Context = createContext<{
+
+export type UpdateAccessTokenFn = (
+  ...props:
+    | [
+        'reissue',
+        {
+          accessToken: string
+          idToken: string
+        },
+      ]
+    | [
+        'id_token',
+        {
+          idToken: IDToken
+        },
+      ]
+) => void
+
+interface ContextType {
   rawAccessToken: string
   accessToken: AccessToken
   idToken: IDToken
-}>({
+  update: UpdateAccessTokenFn
+}
+const Context = createContext<ContextType>({
   rawAccessToken: '',
   accessToken: {} as AccessToken,
   idToken: {} as IDToken,
+  update: () => {},
 })
 
 export const AccessTokenProvider: React.FC<
@@ -87,7 +110,7 @@ export const AccessTokenProvider: React.FC<
     }
 
     return (
-      <Context.Provider
+      <ContextProvider
         value={{
           rawAccessToken,
           accessToken: accessTokenJSON,
@@ -95,7 +118,7 @@ export const AccessTokenProvider: React.FC<
         }}
       >
         {children}
-      </Context.Provider>
+      </ContextProvider>
     )
   } catch {
     window.localStorage.removeItem('raw_access_token')
@@ -105,6 +128,75 @@ export const AccessTokenProvider: React.FC<
     navigate({ to: '/signin' })
     return null
   }
+}
+
+/** NOTE: 주의! axios 용 */
+// eslint-disable-next-line react-refresh/only-export-components
+export const UpdateAccessToken: ContextType = {
+  rawAccessToken: '',
+  accessToken: {} as AccessToken,
+  idToken: {} as IDToken,
+  update: () => {},
+}
+
+const ContextProvider: React.FC<
+  React.PropsWithChildren<{ value: Omit<ContextType, 'update'> }>
+> = ({ children, value }) => {
+  const [state, setState] = useState(value)
+  const navigate = useNavigate()
+
+  UpdateAccessToken.rawAccessToken = state.rawAccessToken
+  UpdateAccessToken.accessToken = state.accessToken
+  UpdateAccessToken.idToken = state.idToken
+  const update: UpdateAccessTokenFn = (mode, props) => {
+    if (mode === 'reissue') {
+      window.localStorage.setItem('raw_access_token', props.accessToken)
+      window.localStorage.setItem('access_token', props.accessToken)
+      window.localStorage.setItem('id_token', props.idToken)
+      window.localStorage.setItem(
+        'signed_version',
+        import.meta.env.VITE_RELEASE_VERSION,
+      )
+
+      try {
+        const accessTokenJSON = decodeJWT<AccessToken>(props.accessToken)
+        const IDTokenJSON = decodeJWT<IDToken>(props.idToken)
+
+        if (accessTokenJSON === null || IDTokenJSON === null) {
+          window.localStorage.removeItem('raw_access_token')
+          window.localStorage.removeItem('access_token')
+          window.localStorage.removeItem('id_token')
+          window.localStorage.removeItem('signed_version')
+          navigate({ to: '/signin' })
+          return
+        }
+
+        setState({
+          rawAccessToken: props.accessToken,
+          accessToken: accessTokenJSON,
+          idToken: IDTokenJSON,
+        })
+      } catch {
+        window.localStorage.removeItem('raw_access_token')
+        window.localStorage.removeItem('access_token')
+        window.localStorage.removeItem('id_token')
+        window.localStorage.removeItem('signed_version')
+        navigate({ to: '/signin' })
+      }
+    }
+    if (mode === 'only_id_token') {
+      window.localStorage.setItem('id_token', JSON.stringify(props.idToken))
+      setState({
+        ...state,
+        idToken: props.idToken,
+      })
+    }
+  }
+  UpdateAccessToken.update = update
+
+  return (
+    <Context.Provider value={{ ...state, update }}>{children}</Context.Provider>
+  )
 }
 export const useAccessToken = () => useContext(Context)
 

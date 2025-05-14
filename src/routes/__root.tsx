@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+
+const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   component: import.meta.env.DEV
@@ -19,10 +22,20 @@ export const Route = createRootRoute({
 
         return (
           <>
-            <Outlet />
-            {toggle && <TanStackRouterDevtools />}
+            <QueryClientProvider client={queryClient}>
+              <Outlet />
+            </QueryClientProvider>
+            {toggle && (
+              <>
+                <TanStackRouterDevtools />
+              </>
+            )}
           </>
         )
       }
-    : () => <Outlet />,
+    : () => (
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+        </QueryClientProvider>
+      ),
 })
