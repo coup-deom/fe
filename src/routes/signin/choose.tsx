@@ -1,7 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-import { useStoresAllQuery } from '@/apis/caches/stores/all'
-import { useSetUserRoleMutation } from '@/apis/caches/user/role'
+import { useSetUserRoleMutation } from '@/apis/caches/user/role.mutation'
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
 import { FullScreenLayout } from '@/components/layouts/pages/FullScreenLayout'
@@ -22,8 +21,6 @@ function Choose() {
   })
 
   const mutation = useSetUserRoleMutation()
-  const query = useStoresAllQuery()
-  console.log(query.data)
   const onSubmit = async (role: Extract<Role, 'OWNER' | 'CUSTOMER'>) => {
     mutation.mutateAsync(
       { role },

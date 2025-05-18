@@ -2,11 +2,12 @@ import React from 'react'
 
 import { Stamp } from '../Stamp'
 
-export const HistoryCard: React.FC = () => {
-  const shopName = '카페 에스프레소'
-  const otp = '1392'
-  const requestedAt = new Date()
-
+interface Props {
+  storeName: string
+  otp: string
+  createdAt: Date
+}
+export const HistoryCard: React.FC<Props> = ({ storeName, createdAt, otp }) => {
   return (
     <div className="flex flex-col w-full px-3 py-3 bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row w-full h-20 gap-5 shrink-0">
@@ -20,7 +21,7 @@ export const HistoryCard: React.FC = () => {
         <div className="flex items-start w-full flex-column">
           <div className="flex flex-col justify-start grow-1">
             <div className="w-full overflow-hidden text-lg font-bold text-black text-ellipsis">
-              {shopName}
+              {storeName}
             </div>
             <div className="w-full mt-3 text-xs font-bold text-black">
               <span className="pr-3">OTP</span>
@@ -42,7 +43,7 @@ export const HistoryCard: React.FC = () => {
         </div>
       </div>
       <div className="flex flex-row justify-end text-xs text-[#333333] font-light">
-        {requestedAt.toISOString().slice(0, 10).replaceAll('-', '.')}
+        {createdAt.toISOString().slice(0, 10).replaceAll('-', '.')}
       </div>
     </div>
   )

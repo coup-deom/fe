@@ -4,6 +4,7 @@ import { SearchIcon } from '../svgs/SearchIcon'
 
 import { Input } from '@/components/airbnbs/input'
 import { cn } from '@/lib/utils'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface Props {
   value: string
@@ -13,25 +14,25 @@ const SearchFilterRoot: React.FC<React.PropsWithChildren<Props>> = ({
   value,
   onChange: _onChange,
 }) => {
+  const { debounce } = useDebounce(_onChange, 300)
+
   useEffect(() => {
     setBuf(value)
   }, [value])
 
   const [buf, setBuf] = useState(value)
-  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      _onChange?.(buf)
-      return
-    }
-  }
+
+  useEffect(() => {
+    if (buf === value) return
+    debounce(buf)
+  }, [buf, value])
 
   return (
     <div className="flex flex-row w-full items-center justify-start px-4 py-2.5 bg-white">
       <Input
         placeholder="가게 검색"
         value={buf}
-        onKeyDown={onKeyDown}
-        onChange={e => setBuf(e.target.value)}
+        onChange={e => setBuf(e.target.value.trim())}
         right={
           <SearchIcon className="fill-black" onClick={() => _onChange(buf)} />
         }

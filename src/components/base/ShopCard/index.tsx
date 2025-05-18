@@ -3,21 +3,57 @@ import React from 'react'
 import { Dialog } from '../Dialog'
 import { Stamp } from '../Stamp'
 
+import { useOTPRequestDeomMutation } from '@/apis/caches/otp/request/deom.mutation'
+import { useOTPRequestStampMutation } from '@/apis/caches/otp/request/stamp.mutation'
 import { Button } from '@/components/airbnbs/button'
+import { useAccessToken } from '@/contexts/AccessToken.context'
 
-const ShopCardRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
+interface ShopCardRootProps {
+  storeId: number
+  storeName: string
+  branchName?: string
+  image: string
+  stampCount: number
+}
+const ShopCardRoot: React.FC<React.PropsWithChildren<ShopCardRootProps>> = ({
+  children,
+  image,
+  stampCount,
+  storeId,
+  storeName,
+  branchName,
+}) => {
+  const { idToken } = useAccessToken()
+  const OTPMutation = useOTPRequestStampMutation()
   const [otp, setOTP] = React.useState<string>()
   const [open, setOpen] = React.useState(false)
 
   const onRequest = () => {
-    setOTP('1392')
-    setOpen(true)
+    if (OTPMutation.isPending || idToken.role !== 'CUSTOMER') {
+      return
+    }
+
+    OTPMutation.mutate(
+      {
+        userId: idToken.userId,
+        storeId: storeId,
+        type: 'STAMP',
+      },
+      {
+        onSuccess: data => {
+          setOTP(data.otpCode.toString())
+          setOpen(true)
+          navigator.clipboard.writeText(data.otpCode.toString())
+        },
+      },
+    )
   }
+
   return (
     <div className="flex flex-col w-full gap-6 px-3 py-3 bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row w-full h-12 gap-5 shrink-0">
         <img
-          src="TODO: image url"
+          src={image}
           alt=""
           width="100%"
           height="100%"
@@ -27,26 +63,10 @@ const ShopCardRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
           <Dialog.Trigger asChild onClick={onRequest}>
             <div className="flex flex-col justify-start grow-1">
               <div className="w-full overflow-hidden text-base font-bold text-black text-ellipsis">
-                {/* TODO: */}
-                {
-                  [
-                    '도담 숭실',
-                    '요거바라 숭실대점',
-                    '뚜레쥬르 숭실대점',
-                    '이디야 숭실대점',
-                    '스타벅스 숭실대점',
-                    '투썸플레이스 숭실대점',
-                    '파리바게뜨 숭실대점',
-                    '할리스 숭실대점',
-                    '커피빈 숭실대점',
-                    '빽다방 숭실대점',
-                    '카페베네 숭실대점',
-                    '탐앤탐스 숭실대점',
-                  ][Math.floor(Math.random() * 100) % 3]
-                }
+                {storeName} {branchName}
               </div>
               <div className="text-xs text-black font-bold w-full mt-2.5">
-                나의 스탬프: 5개
+                나의 스탬프: {stampCount}개
               </div>
             </div>
           </Dialog.Trigger>
@@ -87,6 +107,8 @@ const ShopCardRoot: React.FC<React.PropsWithChildren> = ({ children }) => {
 }
 
 interface ShopCardStampProps {
+  storeId: number
+  deomId: number
   count: number
   threshold: { now: number; prev: number }
   name: string
@@ -94,15 +116,41 @@ interface ShopCardStampProps {
 const ShopCardStamp: React.FC<ShopCardStampProps> = ({
   count,
   threshold,
+  deomId,
+  storeId,
   name,
 }) => {
+  const { idToken } = useAccessToken()
   const isAchieved = threshold.now <= count
+  const OTPMutation = useOTPRequestDeomMutation()
   const [otp, setOTP] = React.useState<string>()
   const [open, setOpen] = React.useState(false)
 
   const onConfirm = () => {
-    // TODO: API 요청, 쿠폰 갯수 갱신, OTP 발급 및 설정
-    setOTP('1392')
+    if (
+      OTPMutation.isPending ||
+      isAchieved === false ||
+      idToken.role !== 'CUSTOMER'
+    ) {
+      return
+    }
+
+    OTPMutation.mutate(
+      {
+        userId: idToken.userId,
+        storeId,
+        deomId,
+        usedStampAmount: threshold.now,
+        type: 'DEOM',
+      },
+      {
+        onSuccess: data => {
+          setOTP(data.otpCode.toString())
+          setOpen(true)
+          navigator.clipboard.writeText(data.otpCode.toString())
+        },
+      },
+    )
   }
 
   return (
@@ -110,7 +158,7 @@ const ShopCardStamp: React.FC<ShopCardStampProps> = ({
       <Dialog.Trigger
         asChild
         onClick={() => {
-          if (isAchieved === false) {
+          if (isAchieved === false || idToken.role !== 'CUSTOMER') {
             return
           }
           setOTP(undefined)
