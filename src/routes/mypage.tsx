@@ -6,7 +6,7 @@ import { useLogoutMutation } from '@/apis/caches/auth/logout.mutation'
 import { useCustomerRequestAllQuery } from '@/apis/caches/customers/request/all.query'
 import { UseUserMeQuery } from '@/apis/caches/user/me.query'
 import { useWithdrawalMutation } from '@/apis/caches/user/withdrawal.mutation'
-import { ProvderMap } from '@/apis/types/Provider.types'
+import { ProviderMap } from '@/apis/types/Provider.types'
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
 import { Filters } from '@/components/base/Filters'
@@ -123,7 +123,7 @@ const Settings: React.FC = () => {
           {userMeQuery.data?.nickname}
         </InfoSection.Item>
         <InfoSection.Item title="연결된 소셜 계정">
-          {userMeQuery.data?.provider && ProvderMap[userMeQuery.data.provider]}
+          {userMeQuery.data?.provider && ProviderMap[userMeQuery.data.provider]}
         </InfoSection.Item>
       </InfoSection>
 
