@@ -85,12 +85,13 @@ const RecentTradeList = () => {
   return (
     <VerticalCardList>
       <TradeCardList noInteraction>
-        <TradeCardList.Item noInteraction status="pending" />
+        {/* TODO: */}
+        {/* <TradeCardList.Item noInteraction status="pending" />
         <TradeCardList.Item noInteraction status="completed" />
         <TradeCardList.Item noInteraction status="canceled" />
         <TradeCardList.Item noInteraction status="completed" />
         <TradeCardList.Item noInteraction status="pending" />
-        <TradeCardList.Item noInteraction status="pending" />
+        <TradeCardList.Item noInteraction status="pending" /> */}
       </TradeCardList>
     </VerticalCardList>
   )
