@@ -7,17 +7,35 @@ import { SearchFilter } from '@/components/base/SearchFilter'
 import { TradeCardList } from '@/components/base/TradeCardList'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import { useAccessToken, withAccessToken } from '@/contexts/AccessToken.context'
 import { Dialog } from '@/components/base/Dialog'
 import { Button } from '@/components/airbnbs/button'
+import { useExchangesQuery, UseExchangesQueryResponse } from '@/apis/caches/exchanges/index.query'
+import { useExchangesMyQuery } from '@/apis/caches/exchanges/my.query'
+import { useExchangesTradableQuery } from '@/apis/caches/exchanges/tradable.query'
 
 export const Route = createFileRoute('/trade')({
   component: withAccessToken(Trade, 'CUSTOMER'),
 })
 
 function Trade() {
+  const { idToken } = useAccessToken()
+  const exchangesQuery = useExchangesQuery()
+  const exchangesMyQuery = useExchangesMyQuery()
+  const exchangesTradableQuery = useExchangesTradableQuery()
   const [filters, setFilters] = useState<Set<string>>(new Set())
-  const [shop, setShop] = useState<string>('')
+  const [storeName, setStoreName] = useState<string>('')
+
+  const list = (() => {
+    if (filters.size === 0) {
+      return exchangesQuery.data ?? []
+    }
+
+    return [
+      ...(filters.has('AVAILABLE') ? exchangesTradableQuery.data ?? [] : []),
+      ...(filters.has('OWN_ONLY') ? exchangesMyQuery.data ?? [] : []),
+    ]
+  })()
 
   return (
     <CommonLayout title="거래소">
@@ -25,23 +43,32 @@ function Trade() {
         value={filters}
         onChange={setFilters}
         options={[
-          { label: '스탬프 보유한 가게만', value: '스탬프 보유한 가게만' },
-          {
-            label: '지금 받을 수 있는 가게만',
-            value: '지금 받을 수 있는 가게만',
-          },
+          { label: '거래 가능한 가게만', value: 'AVAILABLE' },
+          { label: '내가 등록한 가게만', value: 'OWN_ONLY' },
         ]}
       >
-        <SearchFilter.WithWrapper value={shop} onChange={setShop}>
+        <SearchFilter.WithWrapper value={storeName} onChange={setStoreName}>
           <VerticalCardList>
             <TradeCardList>
-              <CardItem isMine />
-              <CardItem isMine={false} />
-              <CardItem isMine={false} />
-              <CardItem isMine={false} />
-              <CardItem isMine />
-              <CardItem isMine={false} />
-              <CardItem isMine />
+              {list
+              .filter(exchange => storeName.length === 0 
+                || (
+                  exchange.sourceAmount
+                  + exchange.sourceStoreName
+                  + exchange.sourceBranchName
+                  + exchange.targetAmount
+                  + exchange.targetStoreName
+                  + exchange.targetBranchName
+                ).includes(storeName)
+              )
+              .map((exchange) => (
+                <CardItem
+                  key={exchange.id}
+                  isMine={exchange.creatorId === idToken.userId}
+                  data={exchange}
+                  onModeChange={(m) => m === 'view' && exchangesQuery.refetch()}
+                />
+              ))}
             </TradeCardList>
           </VerticalCardList>
         </SearchFilter.WithWrapper>
@@ -52,12 +79,34 @@ function Trade() {
 
 interface CardItemProps {
   isMine: boolean
+  data: UseExchangesQueryResponse
+  onModeChange: (mode: 'view' | 'edit') => void
 }
-const CardItem: React.FC<CardItemProps> = ({ isMine }) => {
+const CardItem: React.FC<CardItemProps> = ({ isMine, data, onModeChange: _onModeChange }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view')
 
+  const onModeChange = (m: 'view' | 'edit') => {
+    _onModeChange(m)
+    setMode(m)
+  }
   if (isMine) {
-    return <TradeCardList.Item mode={mode} onModeChange={setMode} />
+    return (
+      <TradeCardList.Item
+        mode={mode}
+        onModeChange={onModeChange}
+        id={data.id}
+        source={{
+          amount: data.sourceAmount,
+          storeName: data.sourceStoreName,
+          branchName: data.sourceBranchName,
+        }}
+        target={{
+          amount: data.targetAmount,
+          storeName: data.targetStoreName,
+          branchName: data.targetBranchName,
+        }}
+      />
+    )
   }
 
   const [open, setOpen] = useState(false)
@@ -66,13 +115,25 @@ const CardItem: React.FC<CardItemProps> = ({ isMine }) => {
   return (
     <Dialog open={open}>
       <Dialog.Trigger onClick={() => setOpen(true)}>
-        <TradeCardList.Item />
+        <TradeCardList.Item
+          id={data.id}
+          source={{
+            amount: data.sourceAmount,
+            storeName: data.sourceStoreName,
+            branchName: data.sourceBranchName,
+          }}
+          target={{
+            amount: data.targetAmount,
+            storeName: data.targetStoreName,
+            branchName: data.targetBranchName,
+          }}
+        />
       </Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Title>정말 거래를 수락하시겠어요?</Dialog.Title>
         <Dialog.Description>
-          고객님의 <span className="font-bold">배스킨라빈스 상도점 "스탬프 2개"</span>를 <br />
-          <span className="font-bold">카페 에스프레소 관악구청점 "스탬프 3개"</span>와 교환합니다.
+          고객님의 <span className="font-bold">"{data.targetStoreName} {data.targetBranchName}" 스탬프 {data.targetAmount}개</span>를 <br />
+          <span className="font-bold">"{data.sourceStoreName} {data.sourceBranchName}" 스탬프 {data.sourceAmount}개</span>와 교환합니다.
         </Dialog.Description>
 
         <Dialog.Footer className="flex flex-row justify-end w-full gap-2">

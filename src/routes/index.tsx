@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
+import { useStoresQuery } from '@/apis/caches/stores/index.query'
 import { Filters } from '@/components/base/Filters'
 import { SearchFilter } from '@/components/base/SearchFilter'
 import { ShopCard } from '@/components/base/ShopCard'
@@ -14,123 +15,69 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
+  const storesQuery = useStoresQuery()
   const [filters, setFilters] = useState(new Set<string>())
-  const [shop, setShop] = useState('')
+  const [storeName, setStoreName] = useState('')
+
   return (
     <CommonLayout title="가게 목록">
       <Filters.WithWrapper
         value={filters}
         onChange={setFilters}
         options={[
-          { label: '스탬프 보유한 가게만', value: '스탬프 보유한 가게만' },
-          {
-            label: '지금 받을 수 있는 가게만',
-            value: '지금 받을 수 있는 가게만',
-          },
+          { label: '스탬프 보유한 가게만', value: 'STAMPED' },
+          { label: '지금 받을 수 있는 가게만', value: 'AVAILABLE' },
         ]}
       >
-        <SearchFilter.WithWrapper value={shop} onChange={setShop}>
+        <SearchFilter.WithWrapper
+          value={storeName}
+          onChange={v => setStoreName(v.trim())}
+        >
           <VerticalCardList>
-            <ShopCard>
-              {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp
-                count={10}
-                name="쿠키 한개"
-                threshold={{ now: 5, prev: 0 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="아메리카노 한잔"
-                threshold={{ now: 10, prev: 5 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="카페라떼 한잔"
-                threshold={{ now: 15, prev: 10 }}
-              />
-            </ShopCard>
-            <ShopCard>
-              {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp
-                count={10}
-                name="아메리카노 한잔"
-                threshold={{ now: 10, prev: 0 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="카페라떼 한잔"
-                threshold={{ now: 15, prev: 10 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="마카롱 세개"
-                threshold={{ now: 20, prev: 15 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="조각케이크 하나"
-                threshold={{ now: 30, prev: 20 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="홀케이크 하나"
-                threshold={{ now: 50, prev: 30 }}
-              />
-            </ShopCard>
-            <ShopCard>
-              {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp
-                count={10}
-                name="쿠키 한개"
-                threshold={{ now: 5, prev: 0 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="아메리카노 한잔"
-                threshold={{ now: 10, prev: 5 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="카페라떼 한잔"
-                threshold={{ now: 15, prev: 10 }}
-              />
-            </ShopCard>
-            <ShopCard>
-              {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp
-                count={10}
-                name="쿠키 한개"
-                threshold={{ now: 5, prev: 0 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="아메리카노 한잔"
-                threshold={{ now: 10, prev: 5 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="카페라떼 한잔"
-                threshold={{ now: 15, prev: 10 }}
-              />
-            </ShopCard>
-            <ShopCard>
-              {/* TODO: Stamp 내용 데이터 기반으로 */}
-              <ShopCard.Stamp
-                count={10}
-                name="쿠키 한개"
-                threshold={{ now: 5, prev: 0 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="아메리카노 한잔"
-                threshold={{ now: 10, prev: 5 }}
-              />
-              <ShopCard.Stamp
-                count={10}
-                name="카페라떼 한잔"
-                threshold={{ now: 15, prev: 10 }}
-              />
-            </ShopCard>
+            {storesQuery.data
+              ?.filter(store => {
+                if (filters.size === 0) {
+                  return true
+                }
+                if (filters.has('STAMPED') && store.myStampCount === 0) {
+                  return false
+                }
+                if (
+                  filters.has('AVAILABLE') &&
+                  store.deoms.at(0) &&
+                  store.deoms[0].requiredStampAmount <= store.myStampCount
+                ) {
+                  return false
+                }
+                return true
+              })
+              .filter(store =>
+                (store.storeName + store.branchName).includes(storeName),
+              )
+              .map(store => (
+                <ShopCard
+                  key={store.storeId}
+                  storeId={store.storeId}
+                  storeName={store.storeName}
+                  branchName={store.branchName}
+                  image={store.image}
+                  stampCount={store.myStampCount}
+                >
+                  {store.deoms.map((deom, index, deoms) => (
+                    <ShopCard.Stamp
+                      key={deom.deomId}
+                      count={store.myStampCount}
+                      name={deom.name}
+                      deomId={deom.deomId}
+                      storeId={store.storeId}
+                      threshold={{
+                        now: deom.requiredStampAmount,
+                        prev: deoms.at(index - 1)?.requiredStampAmount ?? 0,
+                      }}
+                    />
+                  ))}
+                </ShopCard>
+              ))}
           </VerticalCardList>
         </SearchFilter.WithWrapper>
       </Filters.WithWrapper>

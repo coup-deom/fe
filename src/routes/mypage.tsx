@@ -2,6 +2,11 @@ import React, { useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
+import { useLogoutMutation } from '@/apis/caches/auth/logout.mutation'
+import { useCustomerRequestAllQuery } from '@/apis/caches/customers/request/all.query'
+import { UseUserMeQuery } from '@/apis/caches/user/me.query'
+import { useWithdrawalMutation } from '@/apis/caches/user/withdrawal.mutation'
+import { ProvderMap, Provider } from '@/apis/types/Provider.types'
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
 import { Filters } from '@/components/base/Filters'
@@ -11,16 +16,17 @@ import { SearchFilter } from '@/components/base/SearchFilter'
 import { Tabs } from '@/components/base/Tabs'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import { useAccessToken, withAccessToken } from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/mypage')({
   component: withAccessToken(MyPage, 'CUSTOMER'),
 })
 
 function MyPage() {
+  const { idToken } = useAccessToken()
   const [tab, setTab] = useState('requests')
   return (
-    <CommonLayout title={<>강철용사님 반가워요!</>}>
+    <CommonLayout title={<>{idToken.nickname}님 반가워요!</>}>
       <Tabs.WithWrapper
         data={[
           { value: 'requests', label: '요청현황' },
@@ -37,38 +43,41 @@ function MyPage() {
 }
 
 const Requests: React.FC = () => {
+  const requestQuery = useCustomerRequestAllQuery()
   const [filters, setFilters] = useState(new Set<string>())
-  const [shop, setShop] = useState('')
+  const [store, setStore] = useState('')
   return (
     <Filters.WithWrapper
       className="top-25"
       value={filters}
       onChange={setFilters}
       options={[
-        { label: '진행 중인 가게만', value: '진행 중인 가게만' },
-        {
-          label: '완료된 가게만',
-          value: '완료된 가게만',
-        },
+        { label: '진행 중인 가게만', value: 'PENDING' },
+        { label: '완료된 가게만', value: 'APPROVED' },
       ]}
     >
       <SearchFilter.WithWrapper
         className="top-40"
-        value={shop}
-        onChange={setShop}
+        value={store}
+        onChange={v => setStore(v.trim())}
       >
         <VerticalCardList>
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
-          <HistoryCard />
+          {requestQuery.data
+            ?.filter(
+              request => filters.size === 0 || filters.has(request.status),
+            )
+            .filter(
+              request =>
+                store.length === 0 || request.storeName.includes(store),
+            )
+            .map(request => (
+              <HistoryCard
+                key={request.otpId}
+                storeName={request.storeName}
+                otp={request.otpCode.toString()}
+                createdAt={new Date(request.createdAt)}
+              />
+            ))}
         </VerticalCardList>
       </SearchFilter.WithWrapper>
     </Filters.WithWrapper>
@@ -76,27 +85,56 @@ const Requests: React.FC = () => {
 }
 
 const Settings: React.FC = () => {
-  const onSignout = () => {
-    window.localStorage.removeItem('raw_access_token')
-    window.localStorage.removeItem('access_token')
-    window.localStorage.removeItem('id_token')
-    window.localStorage.removeItem('signed_version')
+  const userMeQuery = UseUserMeQuery()
 
-    queueMicrotask(() => window.history.replaceState({}, '', '/'))
+  const logoutMutation = useLogoutMutation()
+  const withdrawalMutation = useWithdrawalMutation()
+
+  const onSignout = () => {
+    logoutMutation.mutate(undefined, {
+      onSettled: () => {
+        window.localStorage.removeItem('raw_access_token')
+        window.localStorage.removeItem('access_token')
+        window.localStorage.removeItem('id_token')
+        window.localStorage.removeItem('signed_version')
+
+        queueMicrotask(() => window.history.replaceState({}, '', '/'))
+      },
+    })
   }
 
-  const onWithdrawal = () => {}
+  const onWithdrawal = () => {
+    withdrawalMutation.mutate(undefined, {
+      onSettled: () => {
+        window.localStorage.removeItem('raw_access_token')
+        window.localStorage.removeItem('access_token')
+        window.localStorage.removeItem('id_token')
+        window.localStorage.removeItem('signed_version')
+
+        queueMicrotask(() => window.history.replaceState({}, '', '/'))
+      },
+    })
+  }
 
   return (
     <div className="flex flex-col w-full gap-2">
       <InfoSection>
-        <InfoSection.Item title="닉네임">강철용사</InfoSection.Item>
-        <InfoSection.Item title="연결된 소셜 계정">구글</InfoSection.Item>
+        <InfoSection.Item title="닉네임">
+          {userMeQuery.data?.nickname}
+        </InfoSection.Item>
+        <InfoSection.Item title="연결된 소셜 계정">
+          {userMeQuery.data?.provider && ProvderMap[userMeQuery.data.provider]}
+        </InfoSection.Item>
       </InfoSection>
 
       <Dialog>
         <Dialog.Trigger asChild>
-          <Button size="lg" variant="secondary" className="py-4 mt-12">
+          <Button
+            size="lg"
+            variant="secondary"
+            className="py-4 mt-12"
+            disabled={logoutMutation.isPending || withdrawalMutation.isPending}
+          >
             로그아웃
           </Button>
         </Dialog.Trigger>
@@ -114,7 +152,11 @@ const Settings: React.FC = () => {
 
       <Dialog>
         <Dialog.Trigger asChild>
-          <Button size="lg" className="py-4">
+          <Button
+            size="lg"
+            className="py-4"
+            disabled={logoutMutation.isPending || withdrawalMutation.isPending}
+          >
             탈퇴하기
           </Button>
         </Dialog.Trigger>

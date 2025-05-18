@@ -50,6 +50,10 @@ FETCHER.interceptors.request.use(
 FETCHER.interceptors.response.use(undefined, (error: any) => {
   if (isAxiosError(error)) {
     if (error?.response?.status === 401) {
+      localStorage.removeItem('signed_version')
+      localStorage.removeItem('raw_access_token')
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('id_token')
       window.location.href = '/signin'
     }
   }

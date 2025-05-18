@@ -184,7 +184,7 @@ const ContextProvider: React.FC<
         navigate({ to: '/signin' })
       }
     }
-    if (mode === 'only_id_token') {
+    if (mode === 'id_token') {
       window.localStorage.setItem('id_token', JSON.stringify(props.idToken))
       setState({
         ...state,
