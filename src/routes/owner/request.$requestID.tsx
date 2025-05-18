@@ -6,11 +6,14 @@ import { Button } from '@/components/airbnbs/button'
 import { Stepper } from '@/components/airbnbs/stepper'
 import { InfoSection } from '@/components/base/InfoSection'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  withAccessToken,
+  withStoreApproval,
+} from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/request/$requestID')({
-  component: withAccessToken(Request, 'OWNER'),
+  component: withAccessToken(withStoreApproval(Request), 'OWNER'),
 })
 
 async function fetchData(requestID: string) {

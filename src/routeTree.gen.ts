@@ -23,6 +23,7 @@ import { Route as OwnerAnalysisImport } from './routes/owner/analysis'
 import { Route as OwnerEntryIndexImport } from './routes/owner/entry/index'
 import { Route as OwnerRequestRequestIDImport } from './routes/owner/request.$requestID'
 import { Route as OwnerEntryWaitingImport } from './routes/owner/entry/waiting'
+import { Route as OwnerEntryMypageImport } from './routes/owner/entry/mypage'
 
 // Create/Update Routes
 
@@ -98,6 +99,12 @@ const OwnerEntryWaitingRoute = OwnerEntryWaitingImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const OwnerEntryMypageRoute = OwnerEntryMypageImport.update({
+  id: '/owner/entry/mypage',
+  path: '/owner/entry/mypage',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -165,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninIndexImport
       parentRoute: typeof rootRoute
     }
+    '/owner/entry/mypage': {
+      id: '/owner/entry/mypage'
+      path: '/owner/entry/mypage'
+      fullPath: '/owner/entry/mypage'
+      preLoaderRoute: typeof OwnerEntryMypageImport
+      parentRoute: typeof rootRoute
+    }
     '/owner/entry/waiting': {
       id: '/owner/entry/waiting'
       path: '/owner/entry/waiting'
@@ -201,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/signin/callback': typeof SigninCallbackRoute
   '/signin/choose': typeof SigninChooseRoute
   '/signin': typeof SigninIndexRoute
+  '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
   '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry': typeof OwnerEntryIndexRoute
@@ -216,6 +231,7 @@ export interface FileRoutesByTo {
   '/signin/callback': typeof SigninCallbackRoute
   '/signin/choose': typeof SigninChooseRoute
   '/signin': typeof SigninIndexRoute
+  '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
   '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry': typeof OwnerEntryIndexRoute
@@ -232,6 +248,7 @@ export interface FileRoutesById {
   '/signin/callback': typeof SigninCallbackRoute
   '/signin/choose': typeof SigninChooseRoute
   '/signin/': typeof SigninIndexRoute
+  '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
   '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry/': typeof OwnerEntryIndexRoute
@@ -249,6 +266,7 @@ export interface FileRouteTypes {
     | '/signin/callback'
     | '/signin/choose'
     | '/signin'
+    | '/owner/entry/mypage'
     | '/owner/entry/waiting'
     | '/owner/request/$requestID'
     | '/owner/entry'
@@ -263,6 +281,7 @@ export interface FileRouteTypes {
     | '/signin/callback'
     | '/signin/choose'
     | '/signin'
+    | '/owner/entry/mypage'
     | '/owner/entry/waiting'
     | '/owner/request/$requestID'
     | '/owner/entry'
@@ -277,6 +296,7 @@ export interface FileRouteTypes {
     | '/signin/callback'
     | '/signin/choose'
     | '/signin/'
+    | '/owner/entry/mypage'
     | '/owner/entry/waiting'
     | '/owner/request/$requestID'
     | '/owner/entry/'
@@ -293,6 +313,7 @@ export interface RootRouteChildren {
   SigninCallbackRoute: typeof SigninCallbackRoute
   SigninChooseRoute: typeof SigninChooseRoute
   SigninIndexRoute: typeof SigninIndexRoute
+  OwnerEntryMypageRoute: typeof OwnerEntryMypageRoute
   OwnerEntryWaitingRoute: typeof OwnerEntryWaitingRoute
   OwnerRequestRequestIDRoute: typeof OwnerRequestRequestIDRoute
   OwnerEntryIndexRoute: typeof OwnerEntryIndexRoute
@@ -308,6 +329,7 @@ const rootRouteChildren: RootRouteChildren = {
   SigninCallbackRoute: SigninCallbackRoute,
   SigninChooseRoute: SigninChooseRoute,
   SigninIndexRoute: SigninIndexRoute,
+  OwnerEntryMypageRoute: OwnerEntryMypageRoute,
   OwnerEntryWaitingRoute: OwnerEntryWaitingRoute,
   OwnerRequestRequestIDRoute: OwnerRequestRequestIDRoute,
   OwnerEntryIndexRoute: OwnerEntryIndexRoute,
@@ -332,6 +354,7 @@ export const routeTree = rootRoute
         "/signin/callback",
         "/signin/choose",
         "/signin/",
+        "/owner/entry/mypage",
         "/owner/entry/waiting",
         "/owner/request/$requestID",
         "/owner/entry/"
@@ -363,6 +386,9 @@ export const routeTree = rootRoute
     },
     "/signin/": {
       "filePath": "signin/index.tsx"
+    },
+    "/owner/entry/mypage": {
+      "filePath": "owner/entry/mypage.tsx"
     },
     "/owner/entry/waiting": {
       "filePath": "owner/entry/waiting.tsx"

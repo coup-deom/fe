@@ -8,10 +8,13 @@ import { SearchFilter } from '@/components/base/SearchFilter'
 import { ShopCard } from '@/components/base/ShopCard'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  withAccessToken,
+  withStoreApproval,
+} from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/')({
-  component: withAccessToken(Index),
+  component: withAccessToken(withStoreApproval(Index)),
 })
 
 function Index() {

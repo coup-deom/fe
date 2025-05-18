@@ -8,7 +8,7 @@ import { CodeIcon } from '@/components/base/svgs/CodeIcon'
 import { CompareArrowIcon } from '@/components/base/svgs/CompareArrowIcon'
 import { CouponIcon } from '@/components/base/svgs/CouponIcon'
 import { HomeIcon } from '@/components/base/svgs/HomeIcon'
-import { useIsOwner } from '@/contexts/AccessToken.context'
+import { useAccessToken } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -70,7 +70,9 @@ interface BottomNavigationBarProps {
 const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
   seamless,
 }) => {
-  const isOwner = useIsOwner()
+  const { idToken } = useAccessToken()
+  const isOwner = idToken.role === 'OWNER'
+  const isStoreApproved = idToken.storeApproved
 
   if (isOwner) {
     return (
@@ -80,18 +82,31 @@ const BottomNavigationBar: React.FC<BottomNavigationBarProps> = ({
           seamless ? undefined : 'inset-shadow-xs',
         )}
       >
-        <Link to="/owner/analysis">
-          <ChartIcon className="text-black" />
-        </Link>
-        <Link to="/owner/otp">
-          <CodeIcon className="text-black" />
-        </Link>
-        <Link to="/">
-          <CouponIcon className="text-black" />
-        </Link>
-        <Link to="/owner/mypage">
-          <AccountBoxIcon className="text-black" />
-        </Link>
+        {isStoreApproved ? (
+          <>
+            <Link to="/owner/analysis">
+              <ChartIcon className="text-black" />
+            </Link>
+            <Link to="/owner/otp">
+              <CodeIcon className="text-black" />
+            </Link>
+            <Link to="/">
+              <CouponIcon className="text-black" />
+            </Link>
+            <Link to="/owner/mypage">
+              <AccountBoxIcon className="text-black" />
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link to="/">
+              <CouponIcon className="text-black" />
+            </Link>
+            <Link to="/owner/entry/mypage">
+              <AccountBoxIcon className="text-black" />
+            </Link>
+          </>
+        )}
       </div>
     )
   }

@@ -6,7 +6,7 @@ import { Role } from '@/contexts/AccessToken.context'
 interface Body {
   role: Role
 }
-interface Response {
+interface useSetUserRoleMutationResponse {
   id: number
   nickname: string
   email: string
@@ -16,7 +16,9 @@ interface Response {
 export function useSetUserRoleMutation() {
   return useMutation({
     mutationFn: (props: Body) =>
-      FETCHER.post<Response>('/user/role', { role: props.role }),
+      FETCHER.post<{ data: useSetUserRoleMutationResponse }>('/user/role', {
+        role: props.role,
+      }),
     mutationKey: ['/user/role'],
   })
 }

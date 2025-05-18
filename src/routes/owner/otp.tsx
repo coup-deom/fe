@@ -2,35 +2,44 @@ import { useEffect, useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
+import { useOTPVerifyMutation } from '@/apis/caches/otp/verify.mutation'
 import { Button } from '@/components/airbnbs/button'
 import { DeleteIcon } from '@/components/base/svgs/DeleteIcon'
 import { MinusIcon } from '@/components/base/svgs/MinusIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  useAccessToken,
+  withAccessToken,
+  withStoreApproval,
+} from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/otp')({
-  component: withAccessToken(OTP, 'OWNER'),
+  component: withAccessToken(withStoreApproval(OTP), 'OWNER'),
 })
 
 function OTP() {
+  const { idToken } = useAccessToken()
+  const otpVerifyMutation = useOTPVerifyMutation()
+  // const navigate = useNavigate()
+
   const [OTP, setOTP] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [isValid, setIsValid] = useState<boolean>()
 
   useEffect(() => {
     if (OTP.length !== 4) {
-      setIsValid(undefined)
+      otpVerifyMutation.reset()
       return
     }
 
-    setLoading(true)
-    setTimeout(() => {
-      setIsValid(Math.random() > 0.5)
-      setLoading(false)
-    }, 1000)
+    // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
+    otpVerifyMutation.mutate({ otpCode: Number(OTP), storeId: idToken.userId }, {
+      onSuccess: () => {
+        // TODO: API 분리 후 처리 필요
+        // navigate({ to: '/owner/request/$requestID', params: { requestID: data. } })
+      },
+    })
   }, [OTP])
-
+  
   return (
     <CommonLayout title="OTP" seamless>
       <div className="flex items-center justify-center w-full py-3 text-2xl font-bold">
@@ -52,7 +61,7 @@ function OTP() {
                 key={index}
                 className={cn(
                   'w-16 h-16 flex justify-center font-bold items-center ',
-                  isValid === false ? 'text-[#D73B53]' : 'text-[#22CC88]',
+                  otpVerifyMutation.data?.status === false ? 'text-[#D73B53]' : 'text-[#22CC88]',
                 )}
               >
                 {item}
@@ -61,7 +70,7 @@ function OTP() {
           )}
       </div>
       <div className="flex items-center justify-center text-xl font-bold h-7">
-        {loading && (
+        {otpVerifyMutation.isPending && (
           <div className="flex items-center justify-center mr-2 w-7 h-7">
             <svg
               className="w-7 h-7 animate-spin text-secondary-foreground"
@@ -82,7 +91,7 @@ function OTP() {
           </div>
         )}
 
-        {isValid === false && (
+        {otpVerifyMutation.data?.status === false && (
           <span className="text-[#D73B53]">유효하지 않은 OTP에요</span>
         )}
       </div>
@@ -96,7 +105,7 @@ function OTP() {
               return (
                 <Button
                   key={item}
-                  disabled={loading}
+                  disabled={otpVerifyMutation.isPending}
                   variant="ghost"
                   size="otp"
                   onClick={() => setOTP(OTP.slice(0, -1))}
@@ -108,7 +117,7 @@ function OTP() {
             return (
               <Button
                 key={item}
-                disabled={loading}
+                disabled={otpVerifyMutation.isPending}
                 variant="ghost"
                 size="otp"
                 onClick={() => setOTP((OTP + item).slice(0, 4))}
