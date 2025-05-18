@@ -26,7 +26,13 @@ function Choose() {
       { role },
       {
         onSuccess: () => {
-          update('id_token', { idToken: { ...idToken, role } })
+          update('id_token', {
+            idToken: {
+              ...idToken,
+              role,
+              storeApproved: role === 'OWNER' ? false : undefined,
+            },
+          })
           navigate({
             to: '/',
           })

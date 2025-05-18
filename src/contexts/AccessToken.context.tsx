@@ -16,6 +16,7 @@ export interface IDToken {
   nickname: string
   iat: number
   exp: number
+  storeApproved?: boolean
 }
 
 export type UpdateAccessTokenFn = (
@@ -207,6 +208,19 @@ export function withAccessToken(Component: React.FC, role?: Role): React.FC {
     </AccessTokenProvider>
   )
 }
+export function withStoreApproval(Component: React.FC): React.FC {
+  return () => {
+    const { idToken } = useAccessToken()
+    const navigate = useNavigate()
+
+    if (idToken.role === 'OWNER' && idToken.storeApproved !== true) {
+      navigate({ to: '/owner/entry' })
+      return null
+    }
+
+    return <Component />
+  }
+}
 
 export function withoutAccessToken(): void {
   const accessToken = import.meta.env.VITE_DEV_USER
@@ -235,10 +249,4 @@ export function withoutAccessToken(): void {
     window.localStorage.removeItem('id_token')
     window.localStorage.removeItem('signed_version')
   }
-}
-
-export function useIsOwner(): boolean {
-  const { idToken } = useAccessToken()
-
-  return idToken.role === 'OWNER'
 }

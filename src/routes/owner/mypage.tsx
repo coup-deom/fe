@@ -2,6 +2,22 @@ import { useState } from 'react'
 
 import { createFileRoute, deepEqual } from '@tanstack/react-router'
 
+import {
+  useDeomPoliciesQuery,
+  UseDeomPoliciesQueryResponse,
+} from '@/apis/caches/deom-policies/[store-id].query'
+import {
+  useDeomPolicyMutation,
+  UseDeomPolicyMutationResponse,
+} from '@/apis/caches/deom-policies/index.mutation'
+import {
+  useStampPoliciesQuery,
+  UseStampPoliciesQueryResponse,
+} from '@/apis/stamp-policies/[store-id].query'
+import {
+  useStampPolicyMutation,
+  UseStampPolicyMutationResponse,
+} from '@/apis/stamp-policies/index.mutation'
 import { Button } from '@/components/airbnbs/button'
 import { Input } from '@/components/airbnbs/input'
 import { Stepper } from '@/components/airbnbs/stepper'
@@ -10,10 +26,14 @@ import { InfoSection } from '@/components/base/InfoSection'
 import { DeleteForeverIcon } from '@/components/base/svgs/DeleteForeverIcon'
 import { PlusIcon } from '@/components/base/svgs/PlusIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  useAccessToken,
+  withAccessToken,
+  withStoreApproval,
+} from '@/contexts/AccessToken.context'
 
 export const Route = createFileRoute('/owner/mypage')({
-  component: withAccessToken(MyPage, 'OWNER'),
+  component: withAccessToken(withStoreApproval(MyPage), 'OWNER'),
 })
 
 function MyPage() {
@@ -84,28 +104,37 @@ function MyPage() {
 }
 
 const DeomSection: React.FC = () => {
-  interface Record {
-    threshold: number
-    deom: string
+  type FormData = Omit<UseDeomPolicyMutationResponse, 'id'> & {
+    id?: UseDeomPolicyMutationResponse['id']
   }
-  const data: Record[] = [
-    { threshold: 1, deom: '머랭 쿠키 한 알' },
-    { threshold: 10, deom: '아메리카노 한 잔' },
-    { threshold: 15, deom: '콜드 브루 한 잔' },
-  ]
+
+  const { idToken } = useAccessToken()
+  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
+  const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: idToken.userId })
+  const deomPolicyMutation = useDeomPolicyMutation()
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
-  const [formData, setFormData] = useState<Record[]>([])
+  const [formData, setFormData] = useState<FormData[]>([])
 
-  const init = (d: Record[]) => {
-    setFormData(structuredClone(d))
+  const init = (d: UseDeomPoliciesQueryResponse[]) => {
+    setFormData(
+      d.map(r => ({
+        name: r.name,
+        requiredStampAmount: r.requiredStampAmount,
+        storeId: idToken.userId,
+        id: r.id,
+      })),
+    )
   }
-  const submit = (d: Record[], callback: () => void) => {
-    console.log(d)
+
+  const submit = async (data: FormData[], callback: () => void) => {
+    await Promise.allSettled(data.map(d => deomPolicyMutation.mutateAsync(d)))
     callback()
   }
+
   const onModeChange = (m?: 'edit' | 'view') => {
-    if (m === undefined) {
+    const data = deomPoliciesQuery.data
+    if (m === undefined || data === undefined) {
       return
     }
     if (m === 'edit') {
@@ -119,16 +148,17 @@ const DeomSection: React.FC = () => {
       return
     }
 
-    submit(formData, () => setMode('view'))
+    void submit(formData, () => setMode('view'))
   }
 
-  const onFormDataChange = (index: number) => (r?: Record) => {
+  const onFormDataChange = (index: number) => (r?: FormData) => {
     setFormData(
       [...formData.slice(0, index), r, ...formData.slice(index + 1)].filter(
-        (v): v is Record => v !== undefined,
+        (v): v is FormData => v !== undefined,
       ),
     )
   }
+
   return (
     <InfoSection.Item
       title="우리 가게 덤"
@@ -136,13 +166,13 @@ const DeomSection: React.FC = () => {
       onModeChange={onModeChange}
     >
       {mode === 'view' ? (
-        data.map(r => (
+        deomPoliciesQuery.data?.map((r, i) => (
           <div
-            key={r.threshold}
+            key={`${i.toString().padStart(4, '0')}_${r.requiredStampAmount}`}
             className="flex flex-row justify-between font-medium align-center text-medium"
           >
-            <div>스탬프 {r.threshold}개</div>
-            <div>{r.deom}</div>
+            <div>스탬프 {r.requiredStampAmount}개</div>
+            <div>{r.name}</div>
           </div>
         ))
       ) : (
@@ -157,9 +187,9 @@ const DeomSection: React.FC = () => {
                   <div className="flex">{i + 1}. 스탬프 개수</div>
                   <div>
                     <Stepper
-                      value={r.threshold}
-                      onChange={threshold =>
-                        onFormDataChange(i)({ ...r, threshold })
+                      value={r.requiredStampAmount}
+                      onChange={requiredStampAmount =>
+                        onFormDataChange(i)({ ...r, requiredStampAmount })
                       }
                       formatter={v => v}
                     />
@@ -167,9 +197,9 @@ const DeomSection: React.FC = () => {
                 </div>
                 <Input
                   placeholder="덤 이름을 입력해주세요."
-                  value={r.deom}
-                  onChange={({ currentTarget: { value: deom } }) =>
-                    onFormDataChange(i)({ ...r, deom })
+                  value={r.name}
+                  onChange={({ currentTarget: { value: name } }) =>
+                    onFormDataChange(i)({ ...r, name })
                   }
                 />
               </div>
@@ -209,8 +239,9 @@ const DeomSection: React.FC = () => {
               className="w-full text-lg font-bold"
               onClick={() =>
                 onFormDataChange(formData.length)({
-                  threshold: 0,
-                  deom: '',
+                  requiredStampAmount: 0,
+                  name: '',
+                  storeId: idToken.userId,
                 })
               }
             >
@@ -224,31 +255,36 @@ const DeomSection: React.FC = () => {
 }
 
 const StampGuideSection: React.FC = () => {
-  interface GuideRecord {
-    threshold: number
-    count: number
+  type FormData = Omit<UseStampPolicyMutationResponse, 'id'> & {
+    id?: UseStampPolicyMutationResponse['id']
   }
-  const data: GuideRecord[] = [
-    { threshold: 5000, count: 1 },
-    { threshold: 10000, count: 2 },
-    { threshold: 15000, count: 3 },
-    { threshold: 20000, count: 5 },
-    { threshold: 25000, count: 8 },
-    { threshold: 30000, count: 10 },
-  ]
+  const { idToken } = useAccessToken()
+  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
+  const stampPoliciesQuery = useStampPoliciesQuery({ storeId: idToken.userId })
+  const stampPoliciesMutation = useStampPolicyMutation()
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
-  const [formData, setFormData] = useState<GuideRecord[]>([])
+  const [formData, setFormData] = useState<FormData[]>([])
 
-  const init = (d: GuideRecord[]) => {
-    setFormData(structuredClone(d))
+  const init = (d: UseStampPoliciesQueryResponse[]) => {
+    setFormData(
+      d.map(r => ({
+        baseAmount: r.baseAmount,
+        stampCount: r.stampCount,
+        storeId: idToken.userId,
+        id: r.id,
+      })),
+    )
   }
-  const submit = (d: GuideRecord[], callback: () => void) => {
-    console.log(d)
+  const submit = async (data: FormData[], callback: () => void) => {
+    await Promise.allSettled(
+      data.map(d => stampPoliciesMutation.mutateAsync(d)),
+    )
     callback()
   }
   const onModeChange = (m?: 'edit' | 'view') => {
-    if (m === undefined) {
+    const data = stampPoliciesQuery.data
+    if (m === undefined || data === undefined) {
       return
     }
     if (m === 'edit') {
@@ -262,13 +298,13 @@ const StampGuideSection: React.FC = () => {
       return
     }
 
-    submit(formData, () => setMode('view'))
+    void submit(formData, () => setMode('view'))
   }
 
-  const onFormDataChange = (index: number) => (r?: GuideRecord) => {
+  const onFormDataChange = (index: number) => (r?: FormData) => {
     setFormData(
       [...formData.slice(0, index), r, ...formData.slice(index + 1)].filter(
-        (v): v is GuideRecord => v !== undefined,
+        (v): v is FormData => v !== undefined,
       ),
     )
   }
@@ -279,13 +315,13 @@ const StampGuideSection: React.FC = () => {
       onModeChange={onModeChange}
     >
       {mode === 'view' ? (
-        data.map(r => (
+        stampPoliciesQuery.data?.map(r => (
           <div
-            key={r.threshold}
+            key={r.baseAmount}
             className="flex flex-row justify-between font-medium align-center text-medium"
           >
-            <div>{r.threshold.toLocaleString()} 원 이상</div>
-            <div>스탬프 {r.count}개</div>
+            <div>{r.baseAmount.toLocaleString()} 원 이상</div>
+            <div>스탬프 {r.stampCount}개</div>
           </div>
         ))
       ) : (
@@ -300,21 +336,23 @@ const StampGuideSection: React.FC = () => {
                   <div className="flex">{i + 1}. 스탬프 개수</div>
                   <div>
                     <Stepper
-                      value={r.count}
-                      onChange={count => onFormDataChange(i)({ ...r, count })}
+                      value={r.stampCount}
+                      onChange={stampCount =>
+                        onFormDataChange(i)({ ...r, stampCount })
+                      }
                       formatter={v => v}
                     />
                   </div>
                 </div>
                 <Input
                   placeholder="기준 금액을 입력해주세요."
-                  value={r.threshold.toLocaleString()}
+                  value={r.baseAmount.toLocaleString()}
                   onChange={({ currentTarget: { value } }) => {
-                    const threshold = Number(value.replaceAll(',', ''))
-                    if (!Number.isSafeInteger(threshold)) {
+                    const baseAmount = Number(value.replaceAll(',', ''))
+                    if (!Number.isSafeInteger(baseAmount)) {
                       return
                     }
-                    onFormDataChange(i)({ ...r, threshold })
+                    onFormDataChange(i)({ ...r, baseAmount })
                   }}
                 />
               </div>
@@ -354,8 +392,9 @@ const StampGuideSection: React.FC = () => {
               className="w-full text-lg font-bold"
               onClick={() =>
                 onFormDataChange(formData.length)({
-                  threshold: 0,
-                  count: 0,
+                  baseAmount: 0,
+                  stampCount: 0,
+                  storeId: idToken.userId,
                 })
               }
             >

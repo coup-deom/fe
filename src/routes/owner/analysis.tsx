@@ -2,15 +2,20 @@ import { useState } from 'react'
 
 import { createFileRoute } from '@tanstack/react-router'
 
+import { useAnalysisCustomerQuery } from '@/apis/caches/analysis/customer.query'
 import { Tabs } from '@/components/base/Tabs'
 import { TradeCardList } from '@/components/base/TradeCardList'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
-import { withAccessToken } from '@/contexts/AccessToken.context'
+import {
+  useAccessToken,
+  withAccessToken,
+  withStoreApproval,
+} from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/owner/analysis')({
-  component: withAccessToken(Analysis, 'OWNER'),
+  component: withAccessToken(withStoreApproval(Analysis), 'OWNER'),
 })
 
 function Analysis() {
@@ -35,23 +40,9 @@ function Analysis() {
 }
 
 const TotalCouponLeaderBoard = () => {
-  interface UserLeaderRecord {
-    id: number
-    nickname: string
-    count: number
-  }
-  const users: UserLeaderRecord[] = [
-    { id: 1, nickname: 'user1', count: 14 },
-    { id: 2, nickname: 'user2', count: 10 },
-    { id: 3, nickname: 'user3', count: 9 },
-    { id: 4, nickname: 'user4', count: 6 },
-    { id: 5, nickname: 'user5', count: 5 },
-    { id: 6, nickname: 'user6', count: 3 },
-    { id: 7, nickname: 'user7', count: 2 },
-    { id: 8, nickname: 'user8', count: 1 },
-    { id: 9, nickname: 'user9', count: 1 },
-    { id: 10, nickname: 'user10', count: 1 },
-  ]
+  const { idToken } = useAccessToken()
+  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
+  const usersQuery = useAnalysisCustomerQuery({ storeId: idToken.userId })
 
   return (
     <VerticalCardList className="items-center px-6">
@@ -60,24 +51,26 @@ const TotalCouponLeaderBoard = () => {
         고객님들이에요!
       </div>
 
-      {users.map((user, i) => (
-        <div
-          key={user.id}
-          className={cn(
-            'flex flex-row items-center w-full gap-6 px-4 py-4 font-bold border-2 rounded-lg whitespace-nowrap',
-            i < 3
-              ? 'border-[#22CC88] bg-[#22CC88] text-white'
-              : 'bg-white text-black',
-            i === 2 ? 'mb-6' : '',
-          )}
-        >
-          <div className="shrink-0">{i + 1}</div>
-          <div className="flex-1 overflow-hidden text-ellipsis">
-            {user.nickname} 님
+      {usersQuery.data
+        ?.sort((a, b) => a.rank - b.rank)
+        .map(user => (
+          <div
+            key={user.userId}
+            className={cn(
+              'flex flex-row items-center w-full gap-6 px-4 py-4 font-bold border-2 rounded-lg whitespace-nowrap',
+              user.rank < 3
+                ? 'border-[#22CC88] bg-[#22CC88] text-white'
+                : 'bg-white text-black',
+              user.rank === 2 ? 'mb-6' : '',
+            )}
+          >
+            <div className="shrink-0">{user.rank}</div>
+            <div className="flex-1 overflow-hidden text-ellipsis">
+              {user.nickname} 님
+            </div>
+            <div className="shrink-0">{user.accumulatedStampAmount} 개</div>
           </div>
-          <div className="shrink-0">{user.count} 개</div>
-        </div>
-      ))}
+        ))}
     </VerticalCardList>
   )
 }

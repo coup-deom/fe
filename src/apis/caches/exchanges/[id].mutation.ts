@@ -33,6 +33,6 @@ export function useUpdateExchangeMutation({ id }: Props) {
           { ...props },
         )
       ).data.data,
-    mutationKey: [`/exchanges/${id}`],
+    mutationKey: ['/exchanges', id],
   })
 }
