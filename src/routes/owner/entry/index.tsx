@@ -30,7 +30,7 @@ interface FormData {
 }
 
 function Entry() {
-  const { idToken } = useAccessToken()
+  const { idToken, update } = useAccessToken()
   const navigate = useNavigate()
   const [formData, setFormData] = useState<FormData>({
     BRN: '',
@@ -46,12 +46,16 @@ function Entry() {
   const storesMutation = useStoresMutation()
 
   useEffect(() => {
+    if (storeStatusQuery.data === undefined) {
+      return
+    }
+
     if (storeStatusQuery.data?.status === 'PENDING') {
       navigate({ to: '/owner/entry/waiting' })
       return
     }
 
-    if (!!storeStatusQuery.data?.status) {
+    if (storeStatusQuery.data?.status !== null) {
       navigate({ to: '/' })
       return
     }
@@ -96,6 +100,13 @@ function Entry() {
       },
       {
         onSuccess: () => {
+          update('id_token', {
+            idToken: {
+              ...(idToken as any),
+              storeApproved: false,
+            },
+          })
+
           navigate({ to: '/owner/entry/waiting' })
         },
       },

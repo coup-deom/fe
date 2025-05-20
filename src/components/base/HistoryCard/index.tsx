@@ -4,7 +4,7 @@ import { Stamp } from '../Stamp'
 
 interface Props {
   storeName: string
-  otp: string
+  otp?: string
   createdAt: Date
 }
 export const HistoryCard: React.FC<Props> = ({ storeName, createdAt, otp }) => {
@@ -24,12 +24,16 @@ export const HistoryCard: React.FC<Props> = ({ storeName, createdAt, otp }) => {
               {storeName}
             </div>
             <div className="w-full mt-3 text-xs font-bold text-black">
-              <span className="pr-3">OTP</span>
-              {[...otp].map((v, i) => (
-                <span key={i} className="px-0.5 font-light">
-                  {v}
-                </span>
-              ))}
+              {otp && (
+                <>
+                  <span className="pr-3">OTP</span>
+                  {[...otp].map((v, i) => (
+                    <span key={i} className="px-0.5 font-light">
+                      {v}
+                    </span>
+                  ))}
+                </>
+              )}
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { createFileRoute, deepEqual } from '@tanstack/react-router'
 
@@ -110,7 +110,7 @@ const DeomSection: React.FC = () => {
 
   const { idToken } = useAccessToken()
   // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
-  const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: idToken.userId })
+  const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: idToken.storeId })
   const deomPolicyMutation = useDeomPolicyMutation()
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
@@ -121,7 +121,7 @@ const DeomSection: React.FC = () => {
       d.map(r => ({
         name: r.name,
         requiredStampAmount: r.requiredStampAmount,
-        storeId: idToken.userId,
+        storeId: idToken.storeId,
         id: r.id,
       })),
     )
@@ -133,6 +133,9 @@ const DeomSection: React.FC = () => {
   }
 
   const onModeChange = (m?: 'edit' | 'view') => {
+    if (deomPoliciesQuery.isPending || deomPolicyMutation.isPending) {
+      return 
+    }
     const data = deomPoliciesQuery.data
     if (m === undefined || data === undefined) {
       return
@@ -158,6 +161,14 @@ const DeomSection: React.FC = () => {
       ),
     )
   }
+
+  useEffect(() => {
+    if (deomPoliciesQuery.data === undefined) {
+      return
+    }
+
+    init(deomPoliciesQuery.data)
+  }, [deomPoliciesQuery.data])
 
   return (
     <InfoSection.Item
@@ -241,7 +252,7 @@ const DeomSection: React.FC = () => {
                 onFormDataChange(formData.length)({
                   requiredStampAmount: 0,
                   name: '',
-                  storeId: idToken.userId,
+                  storeId: idToken.storeId,
                 })
               }
             >
@@ -260,7 +271,7 @@ const StampGuideSection: React.FC = () => {
   }
   const { idToken } = useAccessToken()
   // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
-  const stampPoliciesQuery = useStampPoliciesQuery({ storeId: idToken.userId })
+  const stampPoliciesQuery = useStampPoliciesQuery({ storeId: idToken.storeId })
   const stampPoliciesMutation = useStampPolicyMutation()
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
@@ -271,7 +282,7 @@ const StampGuideSection: React.FC = () => {
       d.map(r => ({
         baseAmount: r.baseAmount,
         stampCount: r.stampCount,
-        storeId: idToken.userId,
+        storeId: idToken.storeId,
         id: r.id,
       })),
     )
@@ -394,7 +405,7 @@ const StampGuideSection: React.FC = () => {
                 onFormDataChange(formData.length)({
                   baseAmount: 0,
                   stampCount: 0,
-                  storeId: idToken.userId,
+                  storeId: idToken.storeId,
                 })
               }
             >

@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TradeImport } from './routes/trade'
 import { Route as MypageImport } from './routes/mypage'
+import { Route as HealthImport } from './routes/health'
 import { Route as IndexImport } from './routes/index'
 import { Route as SigninIndexImport } from './routes/signin/index'
 import { Route as SigninChooseImport } from './routes/signin/choose'
@@ -36,6 +37,12 @@ const TradeRoute = TradeImport.update({
 const MypageRoute = MypageImport.update({
   id: '/mypage',
   path: '/mypage',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const HealthRoute = HealthImport.update({
+  id: '/health',
+  path: '/health',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -114,6 +121,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/health': {
+      id: '/health'
+      path: '/health'
+      fullPath: '/health'
+      preLoaderRoute: typeof HealthImport
       parentRoute: typeof rootRoute
     }
     '/mypage': {
@@ -207,6 +221,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/mypage': typeof MypageRoute
   '/trade': typeof TradeRoute
   '/owner/analysis': typeof OwnerAnalysisRoute
@@ -223,6 +238,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/mypage': typeof MypageRoute
   '/trade': typeof TradeRoute
   '/owner/analysis': typeof OwnerAnalysisRoute
@@ -240,6 +256,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/health': typeof HealthRoute
   '/mypage': typeof MypageRoute
   '/trade': typeof TradeRoute
   '/owner/analysis': typeof OwnerAnalysisRoute
@@ -258,6 +275,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/health'
     | '/mypage'
     | '/trade'
     | '/owner/analysis'
@@ -273,6 +291,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/health'
     | '/mypage'
     | '/trade'
     | '/owner/analysis'
@@ -288,6 +307,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/health'
     | '/mypage'
     | '/trade'
     | '/owner/analysis'
@@ -305,6 +325,7 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HealthRoute: typeof HealthRoute
   MypageRoute: typeof MypageRoute
   TradeRoute: typeof TradeRoute
   OwnerAnalysisRoute: typeof OwnerAnalysisRoute
@@ -321,6 +342,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HealthRoute: HealthRoute,
   MypageRoute: MypageRoute,
   TradeRoute: TradeRoute,
   OwnerAnalysisRoute: OwnerAnalysisRoute,
@@ -346,6 +368,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/health",
         "/mypage",
         "/trade",
         "/owner/analysis",
@@ -362,6 +385,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/health": {
+      "filePath": "health.tsx"
     },
     "/mypage": {
       "filePath": "mypage.tsx"

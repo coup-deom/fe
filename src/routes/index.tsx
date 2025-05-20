@@ -22,6 +22,31 @@ function Index() {
   const [filters, setFilters] = useState(new Set<string>())
   const [storeName, setStoreName] = useState('')
 
+  const list = storesQuery.data
+    ?.filter(store => {
+      if (filters.size === 0) {
+        return true
+      }
+      if (filters.has('STAMPED') && store.myStampCount === 0) {
+        return false
+      }
+      if (
+        !(
+          filters.has('AVAILABLE') &&
+          store.deoms.at(0) &&
+          store.deoms[0].requiredStampAmount <= store.myStampCount
+        )
+      ) {
+        return false
+      }
+      return true
+    })
+    .filter(store => {
+      const concatenated = store.storeName + store.branchName
+      return concatenated
+        .replaceAll(' ', '')
+        .includes(storeName.replaceAll(' ', ''))
+    })
   return (
     <CommonLayout title="가게 목록">
       <Filters.WithWrapper
@@ -34,30 +59,11 @@ function Index() {
       >
         <SearchFilter.WithWrapper
           value={storeName}
-          onChange={v => setStoreName(v.trim())}
+          onChange={v => setStoreName(v)}
         >
           <VerticalCardList>
-            {storesQuery.data
-              ?.filter(store => {
-                if (filters.size === 0) {
-                  return true
-                }
-                if (filters.has('STAMPED') && store.myStampCount === 0) {
-                  return false
-                }
-                if (
-                  filters.has('AVAILABLE') &&
-                  store.deoms.at(0) &&
-                  store.deoms[0].requiredStampAmount <= store.myStampCount
-                ) {
-                  return false
-                }
-                return true
-              })
-              .filter(store =>
-                (store.storeName + store.branchName).includes(storeName),
-              )
-              .map(store => (
+            {(list?.length ?? 0) > 0 ? (
+              list?.map(store => (
                 <ShopCard
                   key={store.storeId}
                   storeId={store.storeId}
@@ -80,7 +86,12 @@ function Index() {
                     />
                   ))}
                 </ShopCard>
-              ))}
+              ))
+            ) : (
+              <div className="w-full py-16 text-gray-500 font-bold text-lg text-center">
+                가게가 없습니다.
+              </div>
+            )}
           </VerticalCardList>
         </SearchFilter.WithWrapper>
       </Filters.WithWrapper>

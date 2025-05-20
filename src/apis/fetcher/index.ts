@@ -1,6 +1,7 @@
 import axios, { isAxiosError } from 'axios'
 
 import { UpdateAccessToken } from '@/contexts/AccessToken.context'
+import { toast } from '@/contexts/Toast.context'
 
 export const FETCHER = axios.create({
   baseURL: import.meta.env.VITE_API_HOST,
@@ -29,9 +30,6 @@ FETCHER.interceptors.request.use(
               },
             },
           ).then(res => res.data as { accessToken: string; idToken: string })
-
-          const { accessToken, idToken } = await refreshPromise
-          UpdateAccessToken.update('reissue', { accessToken, idToken })
           refreshPromise = null
         }
       }
@@ -47,14 +45,35 @@ FETCHER.interceptors.request.use(
   },
 )
 
-FETCHER.interceptors.response.use(undefined, (error: any) => {
-  if (isAxiosError(error)) {
-    if (error?.response?.status === 401) {
-      localStorage.removeItem('signed_version')
-      localStorage.removeItem('raw_access_token')
-      localStorage.removeItem('access_token')
-      localStorage.removeItem('id_token')
-      window.location.href = '/signin'
+FETCHER.interceptors.response.use(
+  value => {
+    if (value.config.method === 'get') {
+      return value
     }
-  }
-})
+
+    if (value.data.message) {
+      toast.add(value.data.message, 'success')
+    }
+
+    if (value.config.url?.includes('/auth/reissue')) {
+      const { accessToken, idToken } = value.data
+      UpdateAccessToken.update('reissue', { accessToken, idToken })
+    }
+
+    return value
+  },
+  (error: any) => {
+    if (isAxiosError(error)) {
+      if (error?.response?.data?.message) {
+        toast.add(error.response.data.message, 'error')
+      }
+      if (error?.response?.status === 401) {
+        localStorage.removeItem('signed_version')
+        localStorage.removeItem('raw_access_token')
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('id_token')
+        window.location.href = '/signin'
+      }
+    }
+  },
+)

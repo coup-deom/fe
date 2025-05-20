@@ -11,11 +11,17 @@ interface UseStoreImageUploadMutationResponse {
 export function useStoreImageUploadMutation() {
   return useMutation({
     mutationFn: async (props: Body) => {
-      const file = await props.file.text()
+      // multipart/form-data로 전송하기 위해 FormData를 사용합니다.
+      const data = new FormData()
+      data.append('file', props.file)
+
       return (
         await FETCHER.post<{ data: UseStoreImageUploadMutationResponse }>(
           '/stores/upload',
-          { file },
+          data,
+          {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          },
         )
       ).data.data
     },
