@@ -28,7 +28,7 @@ function Choose() {
         onSuccess: () => {
           update('id_token', {
             idToken: {
-              ...idToken,
+              ...(idToken as any),
               role,
               storeApproved: role === 'OWNER' ? false : undefined,
             },

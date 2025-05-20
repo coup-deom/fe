@@ -9,6 +9,7 @@ import { CompareArrowIcon } from '@/components/base/svgs/CompareArrowIcon'
 import { CouponIcon } from '@/components/base/svgs/CouponIcon'
 import { HomeIcon } from '@/components/base/svgs/HomeIcon'
 import { useAccessToken } from '@/contexts/AccessToken.context'
+import { ToastProvider } from '@/contexts/Toast.context'
 import { cn } from '@/lib/utils'
 
 interface Props {
@@ -23,7 +24,9 @@ export const CommonLayout: React.FC<PropsWithChildren<Props>> = ({
   return (
     <Root>
       <Header title={title} seamless={seamless} />
-      <Body seamless={seamless}>{children}</Body>
+      <ToastProvider>
+        <Body seamless={seamless}>{children}</Body>
+      </ToastProvider>
       <BottomNavigationBar seamless={seamless} />
     </Root>
   )

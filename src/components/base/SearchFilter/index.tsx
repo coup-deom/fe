@@ -32,7 +32,8 @@ const SearchFilterRoot: React.FC<React.PropsWithChildren<Props>> = ({
       <Input
         placeholder="가게 검색"
         value={buf}
-        onChange={e => setBuf(e.target.value.trim())}
+        onChange={e => setBuf(e.target.value)}
+        onBlur={e => setBuf(e.target.value.trim())}
         right={
           <SearchIcon className="fill-black" onClick={() => _onChange(buf)} />
         }

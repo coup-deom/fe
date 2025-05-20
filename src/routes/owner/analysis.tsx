@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 
 import { useAnalysisCustomerQuery } from '@/apis/caches/analysis/customer.query'
+import { useAnalysisRecentExchangesQuery } from '@/apis/caches/analysis/recent-exchanges.query'
 import { Tabs } from '@/components/base/Tabs'
 import { TradeCardList } from '@/components/base/TradeCardList'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
@@ -41,8 +42,7 @@ function Analysis() {
 
 const TotalCouponLeaderBoard = () => {
   const { idToken } = useAccessToken()
-  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
-  const usersQuery = useAnalysisCustomerQuery({ storeId: idToken.userId })
+  const usersQuery = useAnalysisCustomerQuery({ storeId: idToken.storeId })
 
   return (
     <VerticalCardList className="items-center px-6">
@@ -51,40 +51,69 @@ const TotalCouponLeaderBoard = () => {
         고객님들이에요!
       </div>
 
-      {usersQuery.data
-        ?.sort((a, b) => a.rank - b.rank)
-        .map(user => (
-          <div
-            key={user.userId}
-            className={cn(
-              'flex flex-row items-center w-full gap-6 px-4 py-4 font-bold border-2 rounded-lg whitespace-nowrap',
-              user.rank < 3
-                ? 'border-[#22CC88] bg-[#22CC88] text-white'
-                : 'bg-white text-black',
-              user.rank === 2 ? 'mb-6' : '',
-            )}
-          >
-            <div className="shrink-0">{user.rank}</div>
-            <div className="flex-1 overflow-hidden text-ellipsis">
-              {user.nickname} 님
+      {(usersQuery.data?.length ?? 0) > 0 ? (
+        usersQuery.data
+          ?.sort((a, b) => a.rank - b.rank)
+          .map(user => (
+            <div
+              key={user.userId}
+              className={cn(
+                'flex flex-row items-center w-full gap-6 px-4 py-4 font-bold border-2 rounded-lg whitespace-nowrap',
+                user.rank < 3
+                  ? 'border-[#22CC88] bg-[#22CC88] text-white'
+                  : 'bg-white text-black',
+                user.rank === 2 ? 'mb-6' : '',
+              )}
+            >
+              <div className="shrink-0">{user.rank}</div>
+              <div className="flex-1 overflow-hidden text-ellipsis">
+                {user.nickname} 님
+              </div>
+              <div className="shrink-0">{user.accumulatedStampAmount} 개</div>
             </div>
-            <div className="shrink-0">{user.accumulatedStampAmount} 개</div>
-          </div>
-        ))}
+          ))
+      ) : (
+        <div className="py-4 text-gray-500 font-bold text-lg">
+          아직 쿠폰을 적립한 고객이 없습니다.
+        </div>
+      )}
     </VerticalCardList>
   )
 }
 const RecentTradeList = () => {
+  const { idToken } = useAccessToken()
+  const recentExchangesQuery = useAnalysisRecentExchangesQuery({
+    storeId: idToken.storeId,
+  })
   return (
     <VerticalCardList>
       <TradeCardList noInteraction>
-        {/* TODO: */}
-        {/* <TradeCardList.Item noInteraction status="pending" />
-        <TradeCardList.Item noInteraction status="completed" />
-        <TradeCardList.Item noInteraction status="canceled" />
-        <TradeCardList.Item noInteraction status="completed" />
-        <TradeCardList.Item noInteraction status="pending" />
-        <TradeCardList.Item noInteraction status="pending" /> */}
+        {(recentExchangesQuery.data?.length ?? 0) > 0 ? (
+          recentExchangesQuery.data?.map(exchange => (
+            <TradeCardList.Item
+              key={exchange.id}
+              noInteraction
+              status={exchange.status}
+              source={{
+                id: exchange.sourceStoreId,
+                branchName: exchange.sourceBranchName,
+                amount: exchange.sourceAmount,
+                storeName: exchange.sourceStoreName,
+              }}
+              target={{
+                id: exchange.targetStoreId,
+                branchName: exchange.targetBranchName,
+                amount: exchange.targetAmount,
+                storeName: exchange.targetStoreName,
+              }}
+              id={exchange.id}
+            />
+          ))
+        ) : (
+          <div className="w-full py-4 text-gray-500 font-bold text-lg text-center">
+            최근 거래 내역이 없습니다.
+          </div>
+        )}
       </TradeCardList>
     </VerticalCardList>
   )

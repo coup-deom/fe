@@ -39,11 +39,14 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
   const [fromStoreID, setFromStoreID] = useState<number>()
   const [toStoreID, setToStoreID] = useState<number>()
 
+  const invalid =
+    fromCount === 0 ||
+    toCount === 0 ||
+    fromStoreID === undefined ||
+    toStoreID === undefined
+
   const onSubmit = () => {
-    if (fromCount === 0 || toCount === 0) {
-      return
-    }
-    if (fromStoreID === undefined || toStoreID === undefined) {
+    if (createExchangeMutation.isPending || invalid) {
       return
     }
 
@@ -64,6 +67,10 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
   }
 
   const onClose = () => {
+    if (createExchangeMutation.isPending) {
+      return
+    }
+
     setFromCount(0)
     setToCount(0)
     setFromStoreID(undefined)
@@ -74,7 +81,7 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
     <div className="flex flex-col w-full gap-2">
       {children}
       {!noInteraction && (
-        <div className="fixed right-0 z-50 mb-2 mr-2 bottom-16 pb-safe">
+        <div className="fixed right-0 z-50 mb-4 mr-6 bottom-16 pb-safe">
           <Dialog onOpenChange={v => v === false && onClose()}>
             <Dialog.Trigger asChild>
               <Button variant="secondary" rounded="full" size="icon">
@@ -85,7 +92,14 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
               <Dialog.Title>
                 <div className="flex flex-row items-center justify-between w-full h-[24px]">
                   <span className="text-lg font-bold">쿠폰 거래 등록</span>
-                  <CheckIcon onClick={() => onSubmit()} />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onSubmit()}
+                    disabled={invalid}
+                  >
+                    <CheckIcon />
+                  </Button>
                 </div>
               </Dialog.Title>
               <div className="flex flex-col w-full gap-6 bg-white shadow-xs rounded-2xl">
@@ -172,7 +186,7 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
   )
 }
 interface TradeCardItemProps {
-  status?: 'pending' | 'completed' | 'canceled'
+  status?: 'PENDING' | 'COMPLETED'
   noInteraction?: boolean
   mode?: 'edit' | 'view'
   onModeChange?: (mode: 'edit' | 'view', data?: unknown) => void
@@ -182,11 +196,13 @@ interface TradeCardItemProps {
     storeName: string
     branchName?: string
     amount: number
+    id: number
   }
   target: {
     storeName: string
     branchName?: string
     amount: number
+    id: number
   }
 }
 const TradeCardItem: React.FC<TradeCardItemProps> = ({
@@ -206,16 +222,28 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
 
   const updateExchangeMutation = useUpdateExchangeMutation({ id })
 
-  const [fromCount, setFromCount] = useState(0)
-  const [toCount, setToCount] = useState(0)
-  const [fromStoreID, setFromStoreID] = useState<number>()
-  const [toStoreID, setToStoreID] = useState<number>()
+  const [fromCount, setFromCount] = useState(source.amount)
+  const [toCount, setToCount] = useState(target.amount)
+  const [fromStoreID, setFromStoreID] = useState<number>(source.id)
+  const [toStoreID, setToStoreID] = useState<number>(target.id)
 
+  const invalid =
+    fromCount === 0 ||
+    toCount === 0 ||
+    fromStoreID === undefined ||
+    toStoreID === undefined
   const onSubmit = () => {
-    if (fromCount === 0 || toCount === 0) {
+    if (updateExchangeMutation.isPending || invalid) {
       return
     }
-    if (fromStoreID === undefined || toStoreID === undefined) {
+
+    if (
+      fromCount === source.amount &&
+      toCount === target.amount &&
+      fromStoreID === source.id &&
+      toStoreID === target.id
+    ) {
+      onModeChange?.('view')
       return
     }
 
@@ -235,11 +263,11 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
   }
 
   useEffect(() => {
-    setFromCount(0)
-    setToCount(0)
-    setFromStoreID(undefined)
-    setToStoreID(undefined)
-  }, [mode])
+    setFromCount(source.amount)
+    setToCount(target.amount)
+    setFromStoreID(source.id)
+    setToStoreID(target.id)
+  }, [mode, source.amount, target.amount, source.id, target.id])
 
   return (
     <div className="flex flex-col w-full gap-6 px-4 py-4 text-left bg-white shadow-xs rounded-2xl">
@@ -272,9 +300,18 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
         {!noInteraction &&
           mode !== undefined &&
           (mode === 'edit' ? (
-            <CheckIcon onClick={() => onSubmit()} />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onSubmit()}
+              disabled={invalid}
+            >
+              <CheckIcon />
+            </Button>
           ) : (
-            <EditIcon onClick={() => onModeChange?.('edit')} />
+            <Button variant="ghost" onClick={() => onModeChange?.('edit')}>
+              <EditIcon />
+            </Button>
           ))}
       </div>
 
@@ -313,7 +350,10 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
               내가 가진 쿠폰
             </div>
             <div className="w-full h-4 text-xs font-medium text-black leading-md">
-              <Select>
+              <Select
+                value={fromStoreID?.toString()}
+                onValueChange={v => setFromStoreID(Number(v))}
+              >
                 <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
                   <SelectValue placeholder="가게를 선택해주세요" />
                 </SelectTrigger>
@@ -346,7 +386,10 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
             </div>
             <div className="w-full h-4 text-xs font-medium text-black leading-md">
               {/* TODO: 전체 가게 목록 | 위에서 선택한 건 제외하고 고를 수 있게끔 FE 처리 */}
-              <Select>
+              <Select
+                value={toStoreID?.toString()}
+                onValueChange={v => setToStoreID(Number(v))}
+              >
                 <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
                   <SelectValue placeholder="가게를 선택해주세요" />
                 </SelectTrigger>

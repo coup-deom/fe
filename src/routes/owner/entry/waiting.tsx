@@ -5,6 +5,7 @@ import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
 import { useStoresStatusQuery } from '@/apis/caches/stores/status.query'
 import { useEffect } from 'react'
+import { FETCHER } from '@/apis/fetcher'
 
 export const Route = createFileRoute('/owner/entry/waiting')({
   component: withAccessToken(EntryWaiting, 'OWNER'),
@@ -20,7 +21,9 @@ function EntryWaiting() {
     }
 
     if (storeStatusQuery.data?.status !== 'PENDING' && storeStatusQuery.data?.status !== 'REJECTED') {
-      navigate({ to: '/' })
+      FETCHER.post('/auth/reissue', undefined).then(() => {
+        navigate({ to: '/' })
+      })
       return
     }
   }, [storeStatusQuery.data?.status])

@@ -10,14 +10,23 @@ export interface AccessToken {
   iat: number
   exp: number
 }
-export interface IDToken {
+export type IDToken = {
   userId: number
-  role: Role
   nickname: string
   iat: number
   exp: number
-  storeApproved?: boolean
-}
+} & (
+  | {
+      role: 'OWNER'
+      storeApproved: boolean
+      storeId: number
+    }
+  | {
+      role: 'CUSTOMER' | 'PENDING'
+      storeApproved: never
+      storeId: never
+    }
+)
 
 export type UpdateAccessTokenFn = (
   ...props:

@@ -46,6 +46,20 @@ const Requests: React.FC = () => {
   const requestQuery = useCustomerRequestAllQuery()
   const [filters, setFilters] = useState(new Set<string>())
   const [store, setStore] = useState('')
+
+  const list = requestQuery.data
+    ?.filter(
+      request =>
+        filters.size === 0 ||
+        [...filters.values()].every(f => f === request.status),
+    )
+    .filter(
+      request =>
+        store.length === 0 ||
+        request.storeName
+          .replaceAll(' ', '')
+          .includes(store.replaceAll(' ', '')),
+    )
   return (
     <Filters.WithWrapper
       className="top-25"
@@ -59,25 +73,23 @@ const Requests: React.FC = () => {
       <SearchFilter.WithWrapper
         className="top-40"
         value={store}
-        onChange={v => setStore(v.trim())}
+        onChange={v => setStore(v)}
       >
         <VerticalCardList>
-          {requestQuery.data
-            ?.filter(
-              request => filters.size === 0 || filters.has(request.status),
-            )
-            .filter(
-              request =>
-                store.length === 0 || request.storeName.includes(store),
-            )
-            .map(request => (
+          {(list?.length ?? 0) > 0 ? (
+            list?.map(request => (
               <HistoryCard
                 key={request.otpId}
                 storeName={request.storeName}
-                otp={request.otpCode.toString()}
+                otp={request.otpCode?.toString()}
                 createdAt={new Date(request.createdAt)}
               />
-            ))}
+            ))
+          ) : (
+            <div className="w-full py-4 text-gray-500 font-bold text-lg text-center">
+              요청한 내역이 없습니다.
+            </div>
+          )}
         </VerticalCardList>
       </SearchFilter.WithWrapper>
     </Filters.WithWrapper>

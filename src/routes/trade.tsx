@@ -13,6 +13,7 @@ import { Button } from '@/components/airbnbs/button'
 import { useExchangesQuery, UseExchangesQueryResponse } from '@/apis/caches/exchanges/index.query'
 import { useExchangesMyQuery } from '@/apis/caches/exchanges/my.query'
 import { useExchangesTradableQuery } from '@/apis/caches/exchanges/tradable.query'
+import { UseExecuteExchangeMutation } from '@/apis/caches/exchanges/[exchangeId]/execute.mutation'
 
 export const Route = createFileRoute('/trade')({
   component: withAccessToken(Trade, 'CUSTOMER'),
@@ -28,14 +29,28 @@ function Trade() {
 
   const list = (() => {
     if (filters.size === 0) {
-      return exchangesQuery.data ?? []
+      return exchangesQuery.data
     }
 
     return [
       ...(filters.has('AVAILABLE') ? exchangesTradableQuery.data ?? [] : []),
       ...(filters.has('OWN_ONLY') ? exchangesMyQuery.data ?? [] : []),
-    ]
+    ].filter(
+      (value, index, self) => 
+        index === self.findIndex((t) => (
+          t.id === value.id
+        )),
+    )
   })()
+    ?.filter(exchange => (
+      (exchange.sourceAmount
+      + exchange.sourceStoreName
+      + exchange.sourceBranchName
+      + exchange.targetAmount
+      + exchange.targetStoreName
+      + exchange.targetBranchName).replaceAll(' ', '')
+    ).includes(storeName.replaceAll(' ', ''))
+  )
 
   return (
     <CommonLayout title="거래소">
@@ -50,25 +65,19 @@ function Trade() {
         <SearchFilter.WithWrapper value={storeName} onChange={setStoreName}>
           <VerticalCardList>
             <TradeCardList>
-              {list
-              .filter(exchange => storeName.length === 0 
-                || (
-                  exchange.sourceAmount
-                  + exchange.sourceStoreName
-                  + exchange.sourceBranchName
-                  + exchange.targetAmount
-                  + exchange.targetStoreName
-                  + exchange.targetBranchName
-                ).includes(storeName)
-              )
-              .map((exchange) => (
+              {((list?.length ?? 0) > 0 ) ? (
+                list?.map((exchange) => (
                 <CardItem
                   key={exchange.id}
                   isMine={exchange.creatorId === idToken.userId}
                   data={exchange}
                   onModeChange={(m) => m === 'view' && exchangesQuery.refetch()}
                 />
-              ))}
+              ))) : (
+                <div className="w-full py-12 text-gray-500 font-bold text-lg text-center">
+                  요청 내역이 없습니다.
+                </div>
+              )}
             </TradeCardList>
           </VerticalCardList>
         </SearchFilter.WithWrapper>
@@ -84,6 +93,7 @@ interface CardItemProps {
 }
 const CardItem: React.FC<CardItemProps> = ({ isMine, data, onModeChange: _onModeChange }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view')
+  const mutation = UseExecuteExchangeMutation({ id: data.id })
 
   const onModeChange = (m: 'view' | 'edit') => {
     _onModeChange(m)
@@ -99,33 +109,58 @@ const CardItem: React.FC<CardItemProps> = ({ isMine, data, onModeChange: _onMode
           amount: data.sourceAmount,
           storeName: data.sourceStoreName,
           branchName: data.sourceBranchName,
+          id: data.sourceStoreId,
         }}
         target={{
           amount: data.targetAmount,
           storeName: data.targetStoreName,
           branchName: data.targetBranchName,
+          id: data.targetStoreId,
         }}
       />
     )
   }
 
   const [open, setOpen] = useState(false)
-  const onConfirm = () => { setOpen(false) }
-  
+  const onConfirm = () => { 
+    if (mutation.isPending) {
+      return
+    }
+
+    mutation.mutate(
+      undefined,
+      {
+        onSuccess: () => {
+          setOpen(false)
+        },
+      },
+    )
+  }
+
+  const onOpenChange = (v: boolean) => {
+    if (mutation.isPending) {
+      return
+    }
+
+    setOpen(v)
+  }
+
   return (
-    <Dialog open={open}>
-      <Dialog.Trigger onClick={() => setOpen(true)}>
+    <Dialog open={open} onOpenChange={(v) => onOpenChange(v)}>
+      <Dialog.Trigger onClick={() => onOpenChange(true)}>
         <TradeCardList.Item
           id={data.id}
           source={{
             amount: data.sourceAmount,
             storeName: data.sourceStoreName,
             branchName: data.sourceBranchName,
+            id: data.sourceStoreId,
           }}
           target={{
             amount: data.targetAmount,
             storeName: data.targetStoreName,
             branchName: data.targetBranchName,
+            id: data.targetStoreId,
           }}
         />
       </Dialog.Trigger>
@@ -137,7 +172,7 @@ const CardItem: React.FC<CardItemProps> = ({ isMine, data, onModeChange: _onMode
         </Dialog.Description>
 
         <Dialog.Footer className="flex flex-row justify-end w-full gap-2">
-          <Dialog.Close onClick={() => setOpen(false)}>
+          <Dialog.Close onClick={() => onOpenChange(false)}>
             <Button variant="outline">취소</Button>
           </Dialog.Close>
           <Button variant="default" onClick={onConfirm}>

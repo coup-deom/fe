@@ -10,7 +10,7 @@ export interface UseCustomerRequestAllQueryResponse {
   usedStampAmount: number
   createdAt: string
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED'
-  otpCode: number
+  otpCode: number | null
   deomId: string
   deomName: string
 }

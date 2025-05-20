@@ -32,7 +32,7 @@ function OTP() {
     }
 
     // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
-    otpVerifyMutation.mutate({ otpCode: Number(OTP), storeId: idToken.userId }, {
+    otpVerifyMutation.mutate({ otpCode: Number(OTP), storeId: idToken.storeId }, {
       onSuccess: () => {
         // TODO: API 분리 후 처리 필요
         // navigate({ to: '/owner/request/$requestID', params: { requestID: data. } })
