@@ -281,10 +281,6 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
               return (
                 <span className="text-sm font-bold text-[#22CC88]">완료됨</span>
               )
-            case 'CANCELED':
-              return (
-                <span className="text-sm font-bold text-[#FF3D00]">취소됨</span>
-              )
             case 'PENDING':
               return (
                 <span className="text-sm font-bold text-[#FFB800]">
