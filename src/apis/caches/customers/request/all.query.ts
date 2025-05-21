@@ -11,8 +11,9 @@ export interface UseCustomerRequestAllQueryResponse {
   createdAt: string
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED'
   otpCode: number | null
-  deomId: string
-  deomName: string
+  deomId: number | null
+  deomName: string | null
+  deomRequiredStampAmount: number | null
 }
 export function useCustomerRequestAllQuery() {
   return useQuery({

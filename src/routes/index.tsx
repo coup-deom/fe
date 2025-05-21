@@ -31,8 +31,8 @@ function Index() {
         return false
       }
       if (
+        filters.has('AVAILABLE') &&
         !(
-          filters.has('AVAILABLE') &&
           store.deoms.at(0) &&
           store.deoms[0].requiredStampAmount <= store.myStampCount
         )
@@ -72,19 +72,25 @@ function Index() {
                   image={store.image}
                   stampCount={store.myStampCount}
                 >
-                  {store.deoms.map((deom, index, deoms) => (
-                    <ShopCard.Stamp
-                      key={deom.deomId}
-                      count={store.myStampCount}
-                      name={deom.name}
-                      deomId={deom.deomId}
-                      storeId={store.storeId}
-                      threshold={{
-                        now: deom.requiredStampAmount,
-                        prev: deoms.at(index - 1)?.requiredStampAmount ?? 0,
-                      }}
-                    />
-                  ))}
+                  {store.deoms.length > 0 ? (
+                    store.deoms.map((deom, index, deoms) => (
+                      <ShopCard.Stamp
+                        key={deom.deomId}
+                        count={store.myStampCount}
+                        name={deom.name}
+                        deomId={deom.deomId}
+                        storeId={store.storeId}
+                        threshold={{
+                          now: deom.requiredStampAmount,
+                          prev: deoms.at(index - 1)?.requiredStampAmount ?? 0,
+                        }}
+                      />
+                    ))
+                  ) : (
+                    <div className="flex w-full h-16 justify-center items-center text-gray-500 font-bold text-lg">
+                      아직 등록된 덤이 없습니다.
+                    </div>
+                  )}
                 </ShopCard>
               ))
             ) : (
