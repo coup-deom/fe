@@ -1,6 +1,4 @@
-import React, { PropsWithChildren } from 'react'
-
-import { Link } from '@tanstack/react-router'
+import { PropsWithChildren } from 'react'
 
 import { AccountBoxIcon } from '@/components/base/svgs/AccountBoxIcon'
 import { ChartIcon } from '@/components/base/svgs/ChartIcon'
@@ -9,8 +7,8 @@ import { CompareArrowIcon } from '@/components/base/svgs/CompareArrowIcon'
 import { CouponIcon } from '@/components/base/svgs/CouponIcon'
 import { HomeIcon } from '@/components/base/svgs/HomeIcon'
 import { useAccessToken } from '@/contexts/AccessToken.context'
-import { ToastProvider } from '@/contexts/Toast.context'
 import { cn } from '@/lib/utils'
+import { Link } from '@tanstack/react-router'
 
 interface Props {
   title: React.ReactNode
@@ -24,9 +22,7 @@ export const CommonLayout: React.FC<PropsWithChildren<Props>> = ({
   return (
     <Root>
       <Header title={title} seamless={seamless} />
-      <ToastProvider>
-        <Body seamless={seamless}>{children}</Body>
-      </ToastProvider>
+      <Body seamless={seamless}>{children}</Body>
       <BottomNavigationBar seamless={seamless} />
     </Root>
   )

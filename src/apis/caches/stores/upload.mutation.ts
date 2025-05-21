@@ -1,6 +1,5 @@
-import { useMutation } from '@tanstack/react-query'
-
 import { FETCHER } from '@/apis/fetcher'
+import { useMutation } from '@tanstack/react-query'
 
 interface Body {
   file: File

@@ -1,7 +1,7 @@
 import { FETCHER } from '@/apis/fetcher'
 import { useQuery } from '@tanstack/react-query'
 
-export interface UseStoresQueryResponse {
+export interface UseStoresStampedQueryResponse {
   storeId: number
   storeName: string
   branchName: string
@@ -11,17 +11,21 @@ export interface UseStoresQueryResponse {
     deomId: number
     name: string
     requiredStampAmount: number
-    status: 'UNAVAILABLE' | 'AVAILABLE' | 'PENDING'
+    status: 'UNAVAILABLE' | 'IN_PROGRESS' | 'AVAILABLE'
   }[]
   city: string
   street: string
   detail: string
 }
-export function useStoresQuery() {
+
+export function useStoresStampedQuery() {
   return useQuery({
     queryFn: async () =>
-      (await FETCHER.get<{ data: UseStoresQueryResponse[] }>('/stores')).data
-        .data,
-    queryKey: ['/stores'],
+      (
+        await FETCHER.get<{ data: UseStoresStampedQueryResponse[] }>(
+          '/stores/stamped',
+        )
+      ).data.data,
+    queryKey: ['/stores/stamped'],
   })
 }

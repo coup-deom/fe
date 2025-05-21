@@ -1,6 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { FETCHER } from '@/apis/fetcher'
+import { useQuery } from '@tanstack/react-query'
 
 export interface UseExchangesQueryResponse {
   id: number

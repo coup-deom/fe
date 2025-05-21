@@ -1,11 +1,11 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
 
+import { useStoresStatusQuery } from '@/apis/caches/stores/status.query'
+import { FETCHER } from '@/apis/fetcher'
 import { CheckIcon } from '@/components/base/svgs/CheckIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { withAccessToken } from '@/contexts/AccessToken.context'
-import { useStoresStatusQuery } from '@/apis/caches/stores/status.query'
-import { useEffect } from 'react'
-import { FETCHER } from '@/apis/fetcher'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/owner/entry/waiting')({
   component: withAccessToken(EntryWaiting, 'OWNER'),
@@ -14,19 +14,22 @@ export const Route = createFileRoute('/owner/entry/waiting')({
 function EntryWaiting() {
   const storeStatusQuery = useStoresStatusQuery()
   const navigate = useNavigate()
-  
+
   useEffect(() => {
     if (storeStatusQuery.data === undefined) {
       return
     }
 
-    if (storeStatusQuery.data?.status !== 'PENDING' && storeStatusQuery.data?.status !== 'REJECTED') {
+    if (
+      storeStatusQuery.data?.status !== 'PENDING' &&
+      storeStatusQuery.data?.status !== 'REJECTED'
+    ) {
       FETCHER.post('/auth/reissue', undefined).then(() => {
         navigate({ to: '/' })
       })
       return
     }
-  }, [storeStatusQuery.data?.status])
+  }, [navigate, storeStatusQuery.data])
 
   return (
     <CommonLayout seamless title="가게 입점 대기">
@@ -36,7 +39,9 @@ function EntryWaiting() {
             <CheckIcon width="48" height="48" />
           </div>
           <span className="text-xl font-bold ">
-            {storeStatusQuery.data?.status === 'REJECTED' ? '입점 심사가 반려되었습니다.' : '입점 심사 중 입니다'}
+            {storeStatusQuery.data?.status === 'REJECTED'
+              ? '입점 심사가 반려되었습니다.'
+              : '입점 심사 중 입니다'}
           </span>
         </div>
         <div className="flex flex-col items-start justify-center w-full gap-4 bg-[#f3f3f3] py-4 px-4 rounded-lg">

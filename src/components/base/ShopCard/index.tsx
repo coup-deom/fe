@@ -1,12 +1,12 @@
-import React from 'react'
-
-import { Dialog } from '../Dialog'
-import { Stamp } from '../Stamp'
+import { useState } from 'react'
 
 import { useOTPRequestDeomMutation } from '@/apis/caches/otp/request/deom.mutation'
 import { useOTPRequestStampMutation } from '@/apis/caches/otp/request/stamp.mutation'
 import { Button } from '@/components/airbnbs/button'
 import { useAccessToken } from '@/contexts/AccessToken.context'
+
+import { Dialog } from '../Dialog'
+import { Stamp } from '../Stamp'
 
 interface ShopCardRootProps {
   storeId: number
@@ -25,8 +25,8 @@ const ShopCardRoot: React.FC<React.PropsWithChildren<ShopCardRootProps>> = ({
 }) => {
   const { idToken } = useAccessToken()
   const OTPMutation = useOTPRequestStampMutation()
-  const [otp, setOTP] = React.useState<string>()
-  const [open, setOpen] = React.useState(false)
+  const [otp, setOTP] = useState<string>()
+  const [open, setOpen] = useState(false)
 
   const onRequest = () => {
     if (OTPMutation.isPending || idToken.role !== 'CUSTOMER') {
@@ -123,8 +123,8 @@ const ShopCardStamp: React.FC<ShopCardStampProps> = ({
   const { idToken } = useAccessToken()
   const isAchieved = threshold.now <= count
   const OTPMutation = useOTPRequestDeomMutation()
-  const [otp, setOTP] = React.useState<string>()
-  const [open, setOpen] = React.useState(false)
+  const [otp, setOTP] = useState<string>()
+  const [open, setOpen] = useState(false)
 
   const onConfirm = () => {
     if (

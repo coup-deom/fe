@@ -1,17 +1,17 @@
 import { useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { useStoresQuery } from '@/apis/caches/stores/index.query'
 import { Filters } from '@/components/base/Filters'
 import { SearchFilter } from '@/components/base/SearchFilter'
 import { ShopCard } from '@/components/base/ShopCard'
+import { CircleLoaderIcon } from '@/components/base/svgs/CircleLoaderIcon'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import {
   withAccessToken,
   withStoreApproval,
 } from '@/contexts/AccessToken.context'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/')({
   component: withAccessToken(withStoreApproval(Index)),
@@ -21,6 +21,8 @@ function Index() {
   const storesQuery = useStoresQuery()
   const [filters, setFilters] = useState(new Set<string>())
   const [storeName, setStoreName] = useState('')
+
+  const isLoading = storesQuery.isFetching
 
   const list = storesQuery.data
     ?.filter(store => {
@@ -62,7 +64,11 @@ function Index() {
           onChange={v => setStoreName(v)}
         >
           <VerticalCardList>
-            {(list?.length ?? 0) > 0 ? (
+            {isLoading ? (
+              <div className="flex w-full py-16 text-gray-500 font-bold text-lg justify-center items-center">
+                <CircleLoaderIcon />
+              </div>
+            ) : (list?.length ?? 0) > 0 ? (
               list?.map(store => (
                 <ShopCard
                   key={store.storeId}
@@ -87,7 +93,7 @@ function Index() {
                       />
                     ))
                   ) : (
-                    <div className="flex w-full h-16 justify-center items-center text-gray-500 font-bold text-lg">
+                    <div className="flex w-full h-16 pt-4 justify-center items-center text-gray-500 font-bold text-lg">
                       아직 등록된 덤이 없습니다.
                     </div>
                   )}
