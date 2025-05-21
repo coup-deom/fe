@@ -20,6 +20,7 @@ import {
 } from '@/components/airbnbs/select'
 import { Stepper } from '@/components/airbnbs/stepper'
 import { useAccessToken } from '@/contexts/AccessToken.context'
+import { dateString } from '@/lib/date'
 
 interface Props {
   noInteraction?: boolean
@@ -272,21 +273,19 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
   return (
     <div className="flex flex-col w-full gap-6 px-4 py-4 text-left bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row items-center justify-between w-full h-[24px]">
-        <span className="text-sm font-bold">
-          {createdAt.toISOString().slice(0, 10).replaceAll('-', '. ')}
-        </span>
+        <span className="text-sm font-bold">{dateString(createdAt)}</span>
 
         {(() => {
           switch (status) {
-            case 'completed':
+            case 'COMPLETED':
               return (
                 <span className="text-sm font-bold text-[#22CC88]">완료됨</span>
               )
-            case 'canceled':
+            case 'CANCELED':
               return (
                 <span className="text-sm font-bold text-[#FF3D00]">취소됨</span>
               )
-            case 'pending':
+            case 'PENDING':
               return (
                 <span className="text-sm font-bold text-[#FFB800]">
                   진행 중

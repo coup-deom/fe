@@ -83,6 +83,17 @@ const Requests: React.FC = () => {
                 storeName={request.storeName}
                 otp={request.otpCode?.toString()}
                 createdAt={new Date(request.createdAt)}
+                deom={
+                  request.deomId &&
+                  request.deomName &&
+                  request.deomRequiredStampAmount
+                    ? {
+                        id: request.deomId,
+                        name: request.deomName,
+                        amount: request.deomRequiredStampAmount,
+                      }
+                    : undefined
+                }
               />
             ))
           ) : (
