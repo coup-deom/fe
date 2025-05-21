@@ -273,7 +273,7 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
   return (
     <div className="flex flex-col w-full gap-6 px-4 py-4 text-left bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row items-center justify-between w-full h-[24px]">
-        <span className="text-sm font-bold">{dateString(createdAt)}</span>
+        <span className="text-sm font-bold">{dateString(createdAt, '. ')}</span>
 
         {(() => {
           switch (status) {
