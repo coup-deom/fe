@@ -1,11 +1,11 @@
-import React from 'react'
+import { dateString } from '@/lib/date'
 
 import { Stamp } from '../Stamp'
 
-import { dateString } from '@/lib/date'
-
 interface Props {
+  storeImage: string
   storeName: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED'
   otp?: string
   createdAt: Date
   deom?: {
@@ -15,6 +15,8 @@ interface Props {
   }
 }
 export const HistoryCard: React.FC<Props> = ({
+  status,
+  storeImage,
   storeName,
   createdAt,
   otp,
@@ -24,16 +26,18 @@ export const HistoryCard: React.FC<Props> = ({
     <div className="flex flex-col w-full px-3 py-3 bg-white shadow-xs rounded-2xl">
       <div className="flex flex-row w-full h-20 gap-5 shrink-0">
         <img
-          src="TODO: image url"
+          src={storeImage}
           alt=""
           width="100%"
           height="100%"
-          className="w-12 h-12 bg-black rounded-full"
+          className="w-12 h-12 bg-black rounded-full shrink-0"
         />
-        <div className="flex items-start w-full flex-column">
-          <div className="flex flex-col justify-start grow-1">
-            <div className="w-full overflow-hidden text-lg font-bold text-black text-ellipsis">
-              {storeName}
+        <div className="flex items-start flex-column flex-1 min-w-0">
+          <div className="flex flex-col justify-start w-full">
+            <div className="flex flex-row justify-start items-center gap-2 w-full  text-lg font-bold text-black min-w-0">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+                {storeName}
+              </span>
             </div>
             <div className="w-full mt-3 text-xs font-bold text-black">
               {otp && (
@@ -60,7 +64,27 @@ export const HistoryCard: React.FC<Props> = ({
           )}
         </div>
       </div>
-      <div className="flex flex-row justify-end text-xs text-[#333333] font-light">
+      <div className="flex flex-row justify-end items-center text-xs text-[#333333] font-light">
+        {status === 'EXPIRED' && (
+          <span className="text-xs font-bold text--gray-400 rounded-full shrink-0 mx-2">
+            만료됨
+          </span>
+        )}
+        {status === 'PENDING' && (
+          <span className="text-xs font-bold text--[#22CC88] rounded-full shrink-0 mx-2">
+            진행 중
+          </span>
+        )}
+        {status === 'APPROVED' && (
+          <span className="text-xs font-bold text-[#A22085] rounded-full shrink-0 mx-2">
+            완료됨
+          </span>
+        )}
+        {status === 'REJECTED' && (
+          <span className="text-xs font-bold text-[#FF4D4D] rounded-full shrink-0 mx-2">
+            거절됨
+          </span>
+        )}
         {dateString(createdAt)}
       </div>
     </div>

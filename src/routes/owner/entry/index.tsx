@@ -1,7 +1,5 @@
 import { useEffect, useId, useState } from 'react'
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-
 import { useStoresMutation } from '@/apis/caches/stores/index.mutation'
 import { useStoresStatusQuery } from '@/apis/caches/stores/status.query'
 import { useStoreImageUploadMutation } from '@/apis/caches/stores/upload.mutation'
@@ -12,6 +10,7 @@ import { CloseIcon } from '@/components/base/svgs/CloseIcon'
 import { NoticeIcon } from '@/components/base/svgs/NoticeIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { useAccessToken, withAccessToken } from '@/contexts/AccessToken.context'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/owner/entry/')({
   component: withAccessToken(Entry, 'OWNER'),
@@ -59,7 +58,7 @@ function Entry() {
       navigate({ to: '/' })
       return
     }
-  }, [storeStatusQuery.data?.status])
+  }, [storeStatusQuery.data, navigate])
 
   const BRNID = useId()
   const shopNameID = useId()

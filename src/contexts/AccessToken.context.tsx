@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState } from 'react'
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState } from 'react'
 
+import { decodeJWT } from '@/lib/\boauth'
 import { useNavigate } from '@tanstack/react-router'
-
-import { decodeJWT } from '@/routes/signin/callback'
 
 export type Role = 'PENDING' | 'CUSTOMER' | 'OWNER'
 export interface AccessToken {
@@ -141,7 +141,7 @@ export const AccessTokenProvider: React.FC<
 }
 
 /** NOTE: 주의! axios 용 */
-// eslint-disable-next-line react-refresh/only-export-components
+
 export const UpdateAccessToken: ContextType = {
   rawAccessToken: '',
   accessToken: {} as AccessToken,

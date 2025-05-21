@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const AccountBoxIcon: React.FC<React.ComponentProps<'svg'>> = ({
   ...props
 }) => {

@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { useOTPVerifyMutation } from '@/apis/caches/otp/verify.mutation'
 import { Button } from '@/components/airbnbs/button'
+import { CircleLoaderIcon } from '@/components/base/svgs/CircleLoaderIcon'
 import { DeleteIcon } from '@/components/base/svgs/DeleteIcon'
 import { MinusIcon } from '@/components/base/svgs/MinusIcon'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
@@ -13,6 +12,7 @@ import {
   withStoreApproval,
 } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/owner/otp')({
   component: withAccessToken(withStoreApproval(OTP), 'OWNER'),
@@ -31,15 +31,17 @@ function OTP() {
       return
     }
 
-    // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
-    otpVerifyMutation.mutate({ otpCode: Number(OTP), storeId: idToken.storeId }, {
-      onSuccess: () => {
-        // TODO: API 분리 후 처리 필요
-        // navigate({ to: '/owner/request/$requestID', params: { requestID: data. } })
+    otpVerifyMutation.mutate(
+      { otpCode: Number(OTP), storeId: idToken.storeId },
+      {
+        onSuccess: () => {
+          // TODO: API 분리 후 처리 필요
+          // navigate({ to: '/owner/request/$requestID', params: { requestID: data. } })
+        },
       },
-    })
-  }, [OTP])
-  
+    )
+  }, [OTP, otpVerifyMutation, idToken.storeId])
+
   return (
     <CommonLayout title="OTP" seamless>
       <div className="flex items-center justify-center w-full py-3 text-2xl font-bold">
@@ -61,7 +63,9 @@ function OTP() {
                 key={index}
                 className={cn(
                   'w-16 h-16 flex justify-center font-bold items-center ',
-                  otpVerifyMutation.data?.status === false ? 'text-[#D73B53]' : 'text-[#22CC88]',
+                  otpVerifyMutation.data?.status === false
+                    ? 'text-[#D73B53]'
+                    : 'text-[#22CC88]',
                 )}
               >
                 {item}
@@ -72,22 +76,7 @@ function OTP() {
       <div className="flex items-center justify-center text-xl font-bold h-7">
         {otpVerifyMutation.isPending && (
           <div className="flex items-center justify-center mr-2 w-7 h-7">
-            <svg
-              className="w-7 h-7 animate-spin text-secondary-foreground"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-75"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeDasharray="30 10"
-              ></circle>
-            </svg>
+            <CircleLoaderIcon />
           </div>
         )}
 

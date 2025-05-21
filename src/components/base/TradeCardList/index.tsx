@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from 'react'
-
-import { Dialog } from '../Dialog'
-import { CheckIcon } from '../svgs/CheckIcon'
-import { CompareIcon } from '../svgs/CompareIcon'
-import { EditIcon } from '../svgs/EditIcon'
-import { PlusIcon } from '../svgs/PlusIcon'
+import { useEffect, useState } from 'react'
 
 import { useUpdateExchangeMutation } from '@/apis/caches/exchanges/[id].mutation'
 import { useExchangesMutation } from '@/apis/caches/exchanges/index.mutation'
 import { useStoresQuery } from '@/apis/caches/stores/index.query'
-import { useStoresMyStampsQuery } from '@/apis/caches/stores/my-stamps.query'
+import { useStoresStampedQuery } from '@/apis/caches/stores/stamped.query'
 import { Button } from '@/components/airbnbs/button'
 import {
   Select,
@@ -21,6 +15,13 @@ import {
 import { Stepper } from '@/components/airbnbs/stepper'
 import { useAccessToken } from '@/contexts/AccessToken.context'
 import { dateString } from '@/lib/date'
+import { cn } from '@/lib/utils'
+
+import { Dialog } from '../Dialog'
+import { CheckIcon } from '../svgs/CheckIcon'
+import { CompareIcon } from '../svgs/CompareIcon'
+import { EditIcon } from '../svgs/EditIcon'
+import { PlusIcon } from '../svgs/PlusIcon'
 
 interface Props {
   noInteraction?: boolean
@@ -30,7 +31,7 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
   noInteraction,
 }) => {
   const { idToken } = useAccessToken()
-  const storesMyQuery = useStoresMyStampsQuery()
+  const stampedStoresQuery = useStoresStampedQuery()
   const storesAllQuery = useStoresQuery()
 
   const createExchangeMutation = useExchangesMutation()
@@ -40,9 +41,21 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
   const [fromStoreID, setFromStoreID] = useState<number>()
   const [toStoreID, setToStoreID] = useState<number>()
 
+  const fromStore = stampedStoresQuery.data?.find(
+    store => store.storeId === fromStoreID,
+  )
+
+  const reset = () => {
+    setFromCount(0)
+    setToCount(0)
+    setFromStoreID(undefined)
+    setToStoreID(undefined)
+  }
+
   const invalid =
     fromCount === 0 ||
     toCount === 0 ||
+    fromCount > (fromStore?.myStampCount ?? 0) ||
     fromStoreID === undefined ||
     toStoreID === undefined
 
@@ -111,14 +124,14 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
                     </div>
                     <div className="w-full h-4 text-xs font-medium text-black leading-md">
                       <Select
-                        value={fromStoreID?.toString()}
+                        value={fromStoreID?.toString() ?? ''}
                         onValueChange={v => setFromStoreID(Number(v))}
                       >
                         <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
                           <SelectValue placeholder="가게를 선택해주세요" />
                         </SelectTrigger>
                         <SelectContent>
-                          {storesMyQuery.data?.map(store => (
+                          {stampedStoresQuery.data?.map(store => (
                             <SelectItem
                               key={store.storeId}
                               value={store.storeId.toString()}
@@ -146,7 +159,7 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
                     </div>
                     <div className="w-full h-4 text-xs font-medium text-black leading-md">
                       <Select
-                        value={toStoreID?.toString()}
+                        value={toStoreID?.toString() ?? ''}
                         onValueChange={v => setToStoreID(Number(v))}
                       >
                         <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
@@ -177,6 +190,19 @@ const TradeCardListRoot: React.FC<React.PropsWithChildren<Props>> = ({
                       </div>
                     </div>
                   </div>
+                </div>
+                <div
+                  className={cn(
+                    'flex flex-col items-center justify-between w-full pt-6 text-gray-500 font-bold text-md whitespace-nowrap leading-md',
+                    (fromCount !== 0 ||
+                      toCount !== 0 ||
+                      fromStoreID !== undefined ||
+                      toStoreID !== undefined) &&
+                      'text-black',
+                  )}
+                  onClick={() => reset()}
+                >
+                  초기화
                 </div>
               </div>
             </Dialog.Content>
@@ -218,7 +244,7 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
 }) => {
   const createdAt = new Date()
 
-  const storesMyQuery = useStoresMyStampsQuery()
+  const stampedStoresQuery = useStoresStampedQuery()
   const storesAllQuery = useStoresQuery()
 
   const updateExchangeMutation = useUpdateExchangeMutation({ id })
@@ -228,11 +254,23 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
   const [fromStoreID, setFromStoreID] = useState<number>(source.id)
   const [toStoreID, setToStoreID] = useState<number>(target.id)
 
+  const fromStore = stampedStoresQuery.data?.find(
+    store => store.storeId === fromStoreID,
+  )
+
   const invalid =
     fromCount === 0 ||
     toCount === 0 ||
+    fromCount > (fromStore?.myStampCount ?? 0) ||
     fromStoreID === undefined ||
     toStoreID === undefined
+
+  const reset = () => {
+    setFromCount(source.amount)
+    setToCount(target.amount)
+    setFromStoreID(source.id)
+    setToStoreID(target.id)
+  }
   const onSubmit = () => {
     if (updateExchangeMutation.isPending || invalid) {
       return
@@ -346,14 +384,14 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
             </div>
             <div className="w-full h-4 text-xs font-medium text-black leading-md">
               <Select
-                value={fromStoreID?.toString()}
+                value={fromStoreID?.toString() ?? ''}
                 onValueChange={v => setFromStoreID(Number(v))}
               >
                 <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
                   <SelectValue placeholder="가게를 선택해주세요" />
                 </SelectTrigger>
                 <SelectContent>
-                  {storesMyQuery.data?.map(store => (
+                  {stampedStoresQuery.data?.map(store => (
                     <SelectItem
                       key={store.storeId}
                       value={store.storeId.toString()}
@@ -370,6 +408,11 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
                 <Stepper
                   value={fromCount}
                   onChange={setFromCount}
+                  max={
+                    stampedStoresQuery.data?.find(
+                      store => store.storeId === fromStoreID,
+                    )?.myStampCount ?? 0
+                  }
                   formatter={v => v}
                 />
               </div>
@@ -380,9 +423,8 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
               교환을 원하는 쿠폰
             </div>
             <div className="w-full h-4 text-xs font-medium text-black leading-md">
-              {/* TODO: 전체 가게 목록 | 위에서 선택한 건 제외하고 고를 수 있게끔 FE 처리 */}
               <Select
-                value={toStoreID?.toString()}
+                value={toStoreID?.toString() ?? ''}
                 onValueChange={v => setToStoreID(Number(v))}
               >
                 <SelectTrigger className="w-full h-4 text-xs font-medium text-black leading-md">
@@ -412,6 +454,20 @@ const TradeCardItem: React.FC<TradeCardItemProps> = ({
                 />
               </div>
             </div>
+          </div>
+
+          <div
+            className={cn(
+              'flex flex-col items-center justify-between w-full pt-6 text-gray-500 font-bold text-md whitespace-nowrap leading-md',
+              (fromCount !== source.amount ||
+                toCount !== target.amount ||
+                fromStoreID !== source.id ||
+                toStoreID !== target.id) &&
+                'text-black',
+            )}
+            onClick={() => reset()}
+          >
+            초기화
           </div>
         </div>
       )}

@@ -1,7 +1,6 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-
 import { FullScreenLayout } from '@/components/layouts/pages/FullScreenLayout'
 import { withoutAccessToken } from '@/contexts/AccessToken.context'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/signin/')({
   beforeLoad: withoutAccessToken,

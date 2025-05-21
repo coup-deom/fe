@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { FETCHER } from '@/apis/fetcher'
 import { Provider } from '@/apis/types/Provider.types'
+import { useQuery } from '@tanstack/react-query'
 
 export interface UseUserMeQueryResponse {
   id: number

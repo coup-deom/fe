@@ -1,6 +1,6 @@
+import { FETCHER } from '@/apis/fetcher'
 import { useMutation } from '@tanstack/react-query'
 
-import { FETCHER } from '@/apis/fetcher'
 interface Props {
   id: number
 }

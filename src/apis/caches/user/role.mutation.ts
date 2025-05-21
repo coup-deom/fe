@@ -1,7 +1,6 @@
-import { useMutation } from '@tanstack/react-query'
-
 import { FETCHER } from '@/apis/fetcher'
 import { Role } from '@/contexts/AccessToken.context'
+import { useMutation } from '@tanstack/react-query'
 
 interface Body {
   role: Role

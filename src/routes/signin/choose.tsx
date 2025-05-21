@@ -1,5 +1,3 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-
 import { useSetUserRoleMutation } from '@/apis/caches/user/role.mutation'
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
@@ -9,6 +7,7 @@ import {
   useAccessToken,
   withAccessToken,
 } from '@/contexts/AccessToken.context'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/signin/choose')({
   component: withAccessToken(Choose, 'PENDING'),

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-
-import { SearchIcon } from '../svgs/SearchIcon'
+import { useEffect, useState } from 'react'
 
 import { Input } from '@/components/airbnbs/input'
-import { cn } from '@/lib/utils'
 import { useDebounce } from '@/hooks/useDebounce'
+import { cn } from '@/lib/utils'
+
+import { SearchIcon } from '../svgs/SearchIcon'
 
 interface Props {
   value: string
@@ -25,7 +25,7 @@ const SearchFilterRoot: React.FC<React.PropsWithChildren<Props>> = ({
   useEffect(() => {
     if (buf === value) return
     debounce(buf)
-  }, [buf, value])
+  }, [buf, value, debounce])
 
   return (
     <div className="flex flex-row w-full items-center justify-start px-4 py-2.5 bg-white">

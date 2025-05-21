@@ -25,6 +25,7 @@ export const Stepper: React.FC<Props> = ({
         size="icon"
         className="box-border w-8 h-8 p-4"
         onClick={() => onChange(Math.max(min, value - 1))}
+        disabled={value <= min}
       >
         <MinusIcon />
       </Button>
@@ -37,6 +38,7 @@ export const Stepper: React.FC<Props> = ({
         size="icon"
         className="box-border w-8 h-8 p-4"
         onClick={() => onChange(Math.min(max, value + 1))}
+        disabled={value >= max}
       >
         <PlusIcon />
       </Button>

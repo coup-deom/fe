@@ -1,28 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
-
 import {
   AccessToken,
   IDToken,
   withoutAccessToken,
 } from '@/contexts/AccessToken.context'
-
-export function decodeJWT<T>(token: string): T | null {
-  try {
-    const base64Url = token.split('.')[1]
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
-    const jsonPayload = decodeURIComponent(
-      window
-        .atob(base64)
-        .split('')
-        .map(c => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-        .join(''),
-    )
-    return JSON.parse(jsonPayload)
-  } catch (e) {
-    console.error('Error decoding JWT:', e)
-    return null
-  }
-}
+import { decodeJWT } from '@/lib/\boauth'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/signin/callback')({
   beforeLoad: withoutAccessToken,

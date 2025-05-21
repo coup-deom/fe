@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react'
-
-import { createFileRoute, deepEqual } from '@tanstack/react-router'
+import { useCallback, useEffect, useState } from 'react'
 
 import {
   useDeomPoliciesQuery,
@@ -31,6 +29,7 @@ import {
   withAccessToken,
   withStoreApproval,
 } from '@/contexts/AccessToken.context'
+import { createFileRoute, deepEqual } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/owner/mypage')({
   component: withAccessToken(withStoreApproval(MyPage), 'OWNER'),
@@ -109,23 +108,25 @@ const DeomSection: React.FC = () => {
   }
 
   const { idToken } = useAccessToken()
-  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
   const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: idToken.storeId })
   const deomPolicyMutation = useDeomPolicyMutation()
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
   const [formData, setFormData] = useState<FormData[]>([])
 
-  const init = (d: UseDeomPoliciesQueryResponse[]) => {
-    setFormData(
-      d.map(r => ({
-        name: r.name,
-        requiredStampAmount: r.requiredStampAmount,
-        storeId: idToken.storeId,
-        id: r.id,
-      })),
-    )
-  }
+  const init = useCallback(
+    (d: UseDeomPoliciesQueryResponse[]) => {
+      setFormData(
+        d.map(r => ({
+          name: r.name,
+          requiredStampAmount: r.requiredStampAmount,
+          storeId: idToken.storeId,
+          id: r.id,
+        })),
+      )
+    },
+    [setFormData, idToken.storeId],
+  )
 
   const submit = async (data: FormData[], callback: () => void) => {
     await Promise.allSettled(data.map(d => deomPolicyMutation.mutateAsync(d)))
@@ -134,7 +135,7 @@ const DeomSection: React.FC = () => {
 
   const onModeChange = (m?: 'edit' | 'view') => {
     if (deomPoliciesQuery.isPending || deomPolicyMutation.isPending) {
-      return 
+      return
     }
     const data = deomPoliciesQuery.data
     if (m === undefined || data === undefined) {
@@ -168,7 +169,7 @@ const DeomSection: React.FC = () => {
     }
 
     init(deomPoliciesQuery.data)
-  }, [deomPoliciesQuery.data])
+  }, [deomPoliciesQuery.data, init])
 
   return (
     <InfoSection.Item

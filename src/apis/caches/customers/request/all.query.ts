@@ -1,11 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
-
 import { FETCHER } from '@/apis/fetcher'
+import { useQuery } from '@tanstack/react-query'
 
 export interface UseCustomerRequestAllQueryResponse {
   otpId: string
   storeName: string
   storeId: string
+  storeImage: string
   type: 'STAMP' | 'DEOM'
   usedStampAmount: number
   createdAt: string

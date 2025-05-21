@@ -1,11 +1,10 @@
 import { useState } from 'react'
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { useAnalysisCustomerQuery } from '@/apis/caches/analysis/customer.query'
 import { useAnalysisRecentExchangesQuery } from '@/apis/caches/analysis/recent-exchanges.query'
 import { Tabs } from '@/components/base/Tabs'
 import { TradeCardList } from '@/components/base/TradeCardList'
+import { CircleLoaderIcon } from '@/components/base/svgs/CircleLoaderIcon'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import {
@@ -14,6 +13,7 @@ import {
   withStoreApproval,
 } from '@/contexts/AccessToken.context'
 import { cn } from '@/lib/utils'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/owner/analysis')({
   component: withAccessToken(withStoreApproval(Analysis), 'OWNER'),
@@ -44,14 +44,19 @@ const TotalCouponLeaderBoard = () => {
   const { idToken } = useAccessToken()
   const usersQuery = useAnalysisCustomerQuery({ storeId: idToken.storeId })
 
+  const isLoading = usersQuery.isFetching
+
   return (
     <VerticalCardList className="items-center px-6">
       <div className="mb-4 text-lg font-bold">
         우리 가게에서 <span className="text-[#22CC88]">쿠폰을 적립한</span>{' '}
         고객님들이에요!
       </div>
-
-      {(usersQuery.data?.length ?? 0) > 0 ? (
+      {isLoading ? (
+        <div className="flex w-full py-16 text-gray-500 font-bold text-lg justify-center items-center">
+          <CircleLoaderIcon className="w-7 h-7 animate-spin text-secondary-foreground" />
+        </div>
+      ) : (usersQuery.data?.length ?? 0) > 0 ? (
         usersQuery.data
           ?.sort((a, b) => a.rank - b.rank)
           .map(user => (

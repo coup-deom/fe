@@ -1,6 +1,4 @@
-import React, { useState } from 'react'
-
-import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
 
 import { useLogoutMutation } from '@/apis/caches/auth/logout.mutation'
 import { useCustomerRequestAllQuery } from '@/apis/caches/customers/request/all.query'
@@ -14,9 +12,11 @@ import { HistoryCard } from '@/components/base/HistoryCard'
 import { InfoSection } from '@/components/base/InfoSection'
 import { SearchFilter } from '@/components/base/SearchFilter'
 import { Tabs } from '@/components/base/Tabs'
+import { CircleLoaderIcon } from '@/components/base/svgs/CircleLoaderIcon'
 import { VerticalCardList } from '@/components/layouts/lists/VerticalCardList'
 import { CommonLayout } from '@/components/layouts/pages/CommonLayout'
 import { useAccessToken, withAccessToken } from '@/contexts/AccessToken.context'
+import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/mypage')({
   component: withAccessToken(MyPage, 'CUSTOMER'),
@@ -47,6 +47,8 @@ const Requests: React.FC = () => {
   const [filters, setFilters] = useState(new Set<string>())
   const [store, setStore] = useState('')
 
+  const isLoading = requestQuery.isFetching
+
   const list = requestQuery.data
     ?.filter(
       request =>
@@ -76,10 +78,16 @@ const Requests: React.FC = () => {
         onChange={v => setStore(v)}
       >
         <VerticalCardList>
-          {(list?.length ?? 0) > 0 ? (
+          {isLoading ? (
+            <div className="flex w-full py-16 text-gray-500 font-bold text-lg justify-center items-center">
+              <CircleLoaderIcon />
+            </div>
+          ) : (list?.length ?? 0) > 0 ? (
             list?.map(request => (
               <HistoryCard
                 key={request.otpId}
+                status={request.status}
+                storeImage={request.storeImage}
                 storeName={request.storeName}
                 otp={request.otpCode?.toString()}
                 createdAt={new Date(request.createdAt)}
