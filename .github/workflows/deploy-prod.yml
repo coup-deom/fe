@@ -24,10 +24,10 @@ jobs:
 
       - name: Install Deps & Build
         env:
-          VITE_API_HOST: ${{ env.VITE_API_HOST }}
-          VITE_EMAIL: ${{ env.VITE_EMAIL }}
-          VITE_HOST: ${{ env.VITE_HOST }}
-          VITE_OAUTH_CALLBACK: ${{ env.VITE_OAUTH_CALLBACK }}
+          VITE_API_HOST: ${{ vars.VITE_API_HOST }}
+          VITE_EMAIL: ${{ vars.VITE_EMAIL }}
+          VITE_HOST: ${{ vars.VITE_HOST }}
+          VITE_OAUTH_CALLBACK: ${{ vars.VITE_OAUTH_CALLBACK }}
           VITE_RELEASE_VERSION: ${{ github.sha }}
         run: |
           yarn
