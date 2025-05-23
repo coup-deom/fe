@@ -29,7 +29,7 @@ FETCHER.interceptors.request.use(
                 Authorization: `Bearer ${UpdateAccessToken.accessToken}`,
               },
             },
-          ).then(res => res.data as { accessToken: string; idToken: string })
+          )
           refreshPromise = null
         }
       }
@@ -51,13 +51,14 @@ FETCHER.interceptors.response.use(
       return value
     }
 
-    if (value.data.message) {
-      toast.add(value.data.message, 'success')
+    if (value.config.url?.includes('/auth/reissue')) {
+      const { accessToken, idToken } = value.data.data
+      UpdateAccessToken.update('reissue', { accessToken, idToken })
+      return value
     }
 
-    if (value.config.url?.includes('/auth/reissue')) {
-      const { accessToken, idToken } = value.data
-      UpdateAccessToken.update('reissue', { accessToken, idToken })
+    if (value.data.message) {
+      toast.add(value.data.message, 'success')
     }
 
     return value

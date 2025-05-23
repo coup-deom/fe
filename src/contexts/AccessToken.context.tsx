@@ -160,14 +160,6 @@ const ContextProvider: React.FC<
   UpdateAccessToken.idToken = state.idToken
   const update: UpdateAccessTokenFn = (mode, props) => {
     if (mode === 'reissue') {
-      window.localStorage.setItem('raw_access_token', props.accessToken)
-      window.localStorage.setItem('access_token', props.accessToken)
-      window.localStorage.setItem('id_token', props.idToken)
-      window.localStorage.setItem(
-        'signed_version',
-        import.meta.env.VITE_RELEASE_VERSION,
-      )
-
       try {
         const accessTokenJSON = decodeJWT<AccessToken>(props.accessToken)
         const IDTokenJSON = decodeJWT<IDToken>(props.idToken)
@@ -181,12 +173,27 @@ const ContextProvider: React.FC<
           return
         }
 
+        window.localStorage.setItem('raw_access_token', props.accessToken)
+        window.localStorage.setItem(
+          'access_token',
+          JSON.stringify(accessTokenJSON),
+        )
+        window.localStorage.setItem('id_token', JSON.stringify(IDTokenJSON))
+        window.localStorage.setItem(
+          'signed_version',
+          import.meta.env.VITE_RELEASE_VERSION,
+        )
+
+        UpdateAccessToken.rawAccessToken = state.rawAccessToken
+        UpdateAccessToken.accessToken = state.accessToken
+        UpdateAccessToken.idToken = state.idToken
         setState({
           rawAccessToken: props.accessToken,
           accessToken: accessTokenJSON,
           idToken: IDTokenJSON,
         })
-      } catch {
+      } catch (e) {
+        console.log(e)
         window.localStorage.removeItem('raw_access_token')
         window.localStorage.removeItem('access_token')
         window.localStorage.removeItem('id_token')

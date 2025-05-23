@@ -21,6 +21,11 @@ export function useExchangesMyQuery() {
       (
         await FETCHER.get<{ data: UseExchangesMyQueryResponse[] }>(
           '/exchanges/my',
+          {
+            params: {
+              status: 'PENDING',
+            },
+          },
         )
       ).data.data,
     queryKey: ['/exchanges/my'],
