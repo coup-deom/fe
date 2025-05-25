@@ -22,6 +22,6 @@ export function useStoresQuery() {
     queryFn: async () =>
       (await FETCHER.get<{ data: UseStoresQueryResponse[] }>('/stores')).data
         .data,
-    queryKey: ['/stores'],
+    queryKey: ['stores'],
   })
 }

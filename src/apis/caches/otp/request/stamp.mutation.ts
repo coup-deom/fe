@@ -20,6 +20,6 @@ export function useOTPRequestStampMutation() {
           },
         )
       ).data.data,
-    mutationKey: ['/otp/request/stamp'],
+    mutationKey: ['otp', 'request', 'stamp'],
   })
 }

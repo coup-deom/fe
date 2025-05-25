@@ -19,6 +19,6 @@ export function useAnalysisCustomerQuery({ storeId }: Props) {
           { params: { storeId } },
         )
       ).data.data,
-    queryKey: ['/analysis/customer', storeId],
+    queryKey: ['analysis', 'customer', storeId],
   })
 }

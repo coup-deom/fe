@@ -34,12 +34,11 @@ function Trade() {
       return exchangesQuery.data
     }
 
-    return [
-      ...(filters.has('AVAILABLE') ? (exchangesTradableQuery.data ?? []) : []),
-      ...(filters.has('OWN_ONLY') ? (exchangesMyQuery.data ?? []) : []),
-    ].filter(
-      (value, index, self) => index === self.findIndex(t => t.id === value.id),
-    )
+    if (filters.has('AVAILABLE')) {
+      return exchangesTradableQuery.data
+    }
+
+    return exchangesMyQuery.data
   })()?.filter(exchange =>
     (
       exchange.sourceAmount +
@@ -57,6 +56,7 @@ function Trade() {
     <CommonLayout title="거래소">
       <Filters.WithWrapper
         value={filters}
+        exclusive
         onChange={setFilters}
         options={[
           { label: '거래 가능한 가게만', value: 'AVAILABLE' },

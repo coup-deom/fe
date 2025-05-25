@@ -8,6 +8,7 @@ import {
   useDeomPolicyMutation,
   UseDeomPolicyMutationResponse,
 } from '@/apis/caches/deom-policies/index.mutation'
+import { UseUserMeQuery } from '@/apis/caches/user/me.query'
 import {
   useStampPoliciesQuery,
   UseStampPoliciesQueryResponse,
@@ -16,6 +17,7 @@ import {
   useStampPolicyMutation,
   UseStampPolicyMutationResponse,
 } from '@/apis/stamp-policies/index.mutation'
+import { ProviderMap } from '@/apis/types/Provider.types'
 import { Button } from '@/components/airbnbs/button'
 import { Input } from '@/components/airbnbs/input'
 import { Stepper } from '@/components/airbnbs/stepper'
@@ -36,8 +38,9 @@ export const Route = createFileRoute('/owner/mypage')({
 })
 
 function MyPage() {
-  const nickname = '황금사장'
-  const social = '구글'
+  const { idToken } = useAccessToken()
+  const userMeQuery = UseUserMeQuery()
+
   const onSignout = () => {
     window.localStorage.removeItem('raw_access_token')
     window.localStorage.removeItem('access_token')
@@ -49,11 +52,14 @@ function MyPage() {
   const onWithdrawal = () => {}
 
   return (
-    <CommonLayout title={<>{nickname}님 반가워요!</>}>
+    <CommonLayout title={<>{idToken.nickname}님 반가워요!</>}>
       <div className="flex flex-col w-full gap-2">
         <InfoSection>
-          <InfoSection.Item title="닉네임">{nickname}</InfoSection.Item>
-          <InfoSection.Item title="연결된 소셜 계정">{social}</InfoSection.Item>
+          <InfoSection.Item title="닉네임">{idToken.nickname}</InfoSection.Item>
+          <InfoSection.Item title="연결된 소셜 계정">
+            {userMeQuery.data?.provider &&
+              ProviderMap[userMeQuery.data.provider]}
+          </InfoSection.Item>
           <DeomSection />
           <StampGuideSection />
         </InfoSection>

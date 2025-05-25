@@ -14,7 +14,7 @@ export interface UseDeomPolicyMutationResponse {
 export function useDeomPolicyMutation() {
   return useMutation({
     mutationFn: async (props: Body) => {
-      if (props.storeId === undefined) {
+      if (props.id === undefined) {
         // NOTE: 생성
         return (
           await FETCHER.post<{ data: UseDeomPolicyMutationResponse }>(
@@ -25,13 +25,13 @@ export function useDeomPolicyMutation() {
       } else {
         // NOTE: 수정
         return (
-          await FETCHER.post<{ data: UseDeomPolicyMutationResponse }>(
-            `/stamp-policies/${props.storeId}`,
+          await FETCHER.put<{ data: UseDeomPolicyMutationResponse }>(
+            `/stamp-policies/${props.id}`,
             { ...props },
           )
         ).data.data
       }
     },
-    mutationKey: ['/stamp-policies'],
+    mutationKey: ['stamp-policies'],
   })
 }

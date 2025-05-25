@@ -26,6 +26,6 @@ export function useStoresStampedQuery() {
           '/stores/stamped',
         )
       ).data.data,
-    queryKey: ['/stores/stamped'],
+    queryKey: ['stores', 'stamped'],
   })
 }

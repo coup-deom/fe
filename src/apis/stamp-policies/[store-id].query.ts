@@ -17,6 +17,6 @@ export function useStampPoliciesQuery({ storeId }: Props) {
           `/stamp-policies/${storeId}`,
         )
       ).data.data,
-    queryKey: ['/stamp-policies', storeId],
+    queryKey: ['stamp-policies', storeId],
   })
 }

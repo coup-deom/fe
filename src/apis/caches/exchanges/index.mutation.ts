@@ -31,6 +31,6 @@ export function useExchangesMutation() {
           { ...props },
         )
       ).data.data,
-    mutationKey: ['/exchanges'],
+    mutationKey: ['exchanges'],
   })
 }

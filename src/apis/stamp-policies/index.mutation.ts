@@ -32,6 +32,6 @@ export function useStampPolicyMutation() {
         ).data.data
       }
     },
-    mutationKey: ['/stamp-policies'],
+    mutationKey: ['stamp-policies'],
   })
 }

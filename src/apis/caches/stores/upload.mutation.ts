@@ -24,6 +24,6 @@ export function useStoreImageUploadMutation() {
         )
       ).data.data
     },
-    mutationKey: ['/stores/upload'],
+    mutationKey: ['stores', 'upload'],
   })
 }

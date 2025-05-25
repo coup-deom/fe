@@ -23,6 +23,6 @@ export function useExchangesTradableQuery() {
           '/exchanges/tradable',
         )
       ).data.data,
-    queryKey: ['/exchanges/tradable'],
+    queryKey: ['exchanges', 'tradable'],
   })
 }

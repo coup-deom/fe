@@ -23,6 +23,6 @@ export function useCustomerRequestAllQuery() {
           '/customers/request/all',
         )
       ).data.data,
-    queryKey: ['/customers/request/all'],
+    queryKey: ['customers', 'request', 'all'],
   })
 }

@@ -6,11 +6,13 @@ interface Option {
 }
 interface Props {
   options: Option[]
+  exclusive?: boolean
   value: Set<string>
   onChange: (value: Set<string>) => void
 }
 const FiltersRoot: React.FC<React.PropsWithChildren<Props>> = ({
   options,
+  exclusive = false,
   value,
   onChange,
 }) => {
@@ -20,6 +22,12 @@ const FiltersRoot: React.FC<React.PropsWithChildren<Props>> = ({
       onChange(new Set(value))
       return
     }
+
+    if (exclusive) {
+      onChange(new Set([curr]))
+      return
+    }
+
     value.add(curr)
     onChange(new Set(value))
   }

@@ -14,6 +14,6 @@ export function UseUserMeQuery() {
     queryFn: async () =>
       (await FETCHER.get<{ data: UseUserMeQueryResponse }>('/user/me')).data
         .data,
-    queryKey: ['/user/me'],
+    queryKey: ['user', 'me'],
   })
 }

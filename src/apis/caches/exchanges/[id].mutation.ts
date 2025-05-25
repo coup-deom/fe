@@ -28,11 +28,11 @@ export function useUpdateExchangeMutation({ id }: Props) {
   return useMutation({
     mutationFn: async (props: Body) =>
       (
-        await FETCHER.post<{ data: UseUpdateExchangeMutationResponse }>(
+        await FETCHER.put<{ data: UseUpdateExchangeMutationResponse }>(
           `/exchanges/${id}`,
           { ...props },
         )
       ).data.data,
-    mutationKey: ['/exchanges', id],
+    mutationKey: ['exchanges', id],
   })
 }

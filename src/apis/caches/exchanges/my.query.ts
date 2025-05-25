@@ -28,6 +28,6 @@ export function useExchangesMyQuery() {
           },
         )
       ).data.data,
-    queryKey: ['/exchanges/my'],
+    queryKey: ['exchanges', 'my'],
   })
 }

@@ -18,6 +18,6 @@ export function useSetUserRoleMutation() {
       FETCHER.post<{ data: useSetUserRoleMutationResponse }>('/user/role', {
         role: props.role,
       }),
-    mutationKey: ['/user/role'],
+    mutationKey: ['user', 'role'],
   })
 }

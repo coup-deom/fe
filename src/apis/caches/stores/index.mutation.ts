@@ -29,6 +29,6 @@ export function useStoresMutation() {
           ...props,
         })
       ).data.data,
-    mutationKey: ['/stores'],
+    mutationKey: ['stores'],
   })
 }

@@ -13,6 +13,6 @@ export function UseExecuteExchangeMutation({ id }: Props) {
           `/exchanges/${id}/execute`,
         )
       ).data.data,
-    mutationKey: ['/exchanges', id],
+    mutationKey: ['exchanges', id],
   })
 }

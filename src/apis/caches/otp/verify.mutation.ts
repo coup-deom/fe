@@ -5,9 +5,13 @@ interface Body {
   storeId: number
   otpCode: number
 }
-interface UseOTPVerifyMutationResponse {
-  // TODO: OTP API 변경되면 반영하기
-  status: boolean
+export interface UseOTPVerifyMutationResponse {
+  userId: number
+  storeId: number
+  type: 'STAMP' | 'DEOM'
+  deomId: number | null
+  usedStampAmount: number
+  createdAt: string
 }
 export function useOTPVerifyMutation() {
   return useMutation({
@@ -18,6 +22,6 @@ export function useOTPVerifyMutation() {
           { ...props },
         )
       ).data.data,
-    mutationKey: ['/otp/verify'],
+    mutationKey: ['otp', 'verify'],
   })
 }

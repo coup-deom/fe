@@ -12,6 +12,6 @@ export function useStoresStatusQuery() {
           '/stores/status',
         )
       ).data.data,
-    queryKey: ['/stores/status'],
+    queryKey: ['stores', 'status'],
   })
 }

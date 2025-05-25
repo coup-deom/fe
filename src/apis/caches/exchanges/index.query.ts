@@ -20,6 +20,6 @@ export function useExchangesQuery() {
     queryFn: async () =>
       (await FETCHER.get<{ data: UseExchangesQueryResponse[] }>('/exchanges'))
         .data.data,
-    queryKey: ['/exchanges'],
+    queryKey: ['exchanges'],
   })
 }

@@ -22,6 +22,6 @@ export function useOTPRequestDeomMutation() {
           },
         )
       ).data.data,
-    mutationKey: ['/otp/request/deom'],
+    mutationKey: ['otp', 'request', 'deom'],
   })
 }

@@ -17,6 +17,6 @@ export function useDeomPoliciesQuery({ storeId }: Props) {
           `/deom-policies/${storeId}`,
         )
       ).data.data,
-    queryKey: ['/deom-policies', storeId],
+    queryKey: ['deom-policies', storeId],
   })
 }
