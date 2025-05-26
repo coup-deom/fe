@@ -22,7 +22,6 @@ import { Route as OwnerOtpImport } from './routes/owner/otp'
 import { Route as OwnerMypageImport } from './routes/owner/mypage'
 import { Route as OwnerAnalysisImport } from './routes/owner/analysis'
 import { Route as OwnerEntryIndexImport } from './routes/owner/entry/index'
-import { Route as OwnerRequestRequestIDImport } from './routes/owner/request.$requestID'
 import { Route as OwnerEntryWaitingImport } from './routes/owner/entry/waiting'
 import { Route as OwnerEntryMypageImport } from './routes/owner/entry/mypage'
 
@@ -91,12 +90,6 @@ const OwnerAnalysisRoute = OwnerAnalysisImport.update({
 const OwnerEntryIndexRoute = OwnerEntryIndexImport.update({
   id: '/owner/entry/',
   path: '/owner/entry/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const OwnerRequestRequestIDRoute = OwnerRequestRequestIDImport.update({
-  id: '/owner/request/$requestID',
-  path: '/owner/request/$requestID',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -200,13 +193,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OwnerEntryWaitingImport
       parentRoute: typeof rootRoute
     }
-    '/owner/request/$requestID': {
-      id: '/owner/request/$requestID'
-      path: '/owner/request/$requestID'
-      fullPath: '/owner/request/$requestID'
-      preLoaderRoute: typeof OwnerRequestRequestIDImport
-      parentRoute: typeof rootRoute
-    }
     '/owner/entry/': {
       id: '/owner/entry/'
       path: '/owner/entry'
@@ -232,7 +218,6 @@ export interface FileRoutesByFullPath {
   '/signin': typeof SigninIndexRoute
   '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
-  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry': typeof OwnerEntryIndexRoute
 }
 
@@ -249,7 +234,6 @@ export interface FileRoutesByTo {
   '/signin': typeof SigninIndexRoute
   '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
-  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry': typeof OwnerEntryIndexRoute
 }
 
@@ -267,7 +251,6 @@ export interface FileRoutesById {
   '/signin/': typeof SigninIndexRoute
   '/owner/entry/mypage': typeof OwnerEntryMypageRoute
   '/owner/entry/waiting': typeof OwnerEntryWaitingRoute
-  '/owner/request/$requestID': typeof OwnerRequestRequestIDRoute
   '/owner/entry/': typeof OwnerEntryIndexRoute
 }
 
@@ -286,7 +269,6 @@ export interface FileRouteTypes {
     | '/signin'
     | '/owner/entry/mypage'
     | '/owner/entry/waiting'
-    | '/owner/request/$requestID'
     | '/owner/entry'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -302,7 +284,6 @@ export interface FileRouteTypes {
     | '/signin'
     | '/owner/entry/mypage'
     | '/owner/entry/waiting'
-    | '/owner/request/$requestID'
     | '/owner/entry'
   id:
     | '__root__'
@@ -318,7 +299,6 @@ export interface FileRouteTypes {
     | '/signin/'
     | '/owner/entry/mypage'
     | '/owner/entry/waiting'
-    | '/owner/request/$requestID'
     | '/owner/entry/'
   fileRoutesById: FileRoutesById
 }
@@ -336,7 +316,6 @@ export interface RootRouteChildren {
   SigninIndexRoute: typeof SigninIndexRoute
   OwnerEntryMypageRoute: typeof OwnerEntryMypageRoute
   OwnerEntryWaitingRoute: typeof OwnerEntryWaitingRoute
-  OwnerRequestRequestIDRoute: typeof OwnerRequestRequestIDRoute
   OwnerEntryIndexRoute: typeof OwnerEntryIndexRoute
 }
 
@@ -353,7 +332,6 @@ const rootRouteChildren: RootRouteChildren = {
   SigninIndexRoute: SigninIndexRoute,
   OwnerEntryMypageRoute: OwnerEntryMypageRoute,
   OwnerEntryWaitingRoute: OwnerEntryWaitingRoute,
-  OwnerRequestRequestIDRoute: OwnerRequestRequestIDRoute,
   OwnerEntryIndexRoute: OwnerEntryIndexRoute,
 }
 
@@ -379,7 +357,6 @@ export const routeTree = rootRoute
         "/signin/",
         "/owner/entry/mypage",
         "/owner/entry/waiting",
-        "/owner/request/$requestID",
         "/owner/entry/"
       ]
     },
@@ -418,9 +395,6 @@ export const routeTree = rootRoute
     },
     "/owner/entry/waiting": {
       "filePath": "owner/entry/waiting.tsx"
-    },
-    "/owner/request/$requestID": {
-      "filePath": "owner/request.$requestID.tsx"
     },
     "/owner/entry/": {
       "filePath": "owner/entry/index.tsx"

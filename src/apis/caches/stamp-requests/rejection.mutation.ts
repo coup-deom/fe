@@ -10,7 +10,7 @@ interface Body {
 export function useStampRequestRejectionMutation() {
   return useMutation({
     mutationFn: (props: Body) =>
-      FETCHER.post('/stamp-requests/rejection', { ...props }),
-    mutationKey: ['stamp-requests', 'rejection'],
+      FETCHER.post('/stamp-request/rejection', { ...props }),
+    mutationKey: ['stamp-request', 'rejection'],
   })
 }

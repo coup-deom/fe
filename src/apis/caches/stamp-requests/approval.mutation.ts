@@ -10,7 +10,7 @@ interface Body {
 export function useStampRequestApprovalMutation() {
   return useMutation({
     mutationFn: (props: Body) =>
-      FETCHER.post('/stamp-requests/approval', { ...props }),
-    mutationKey: ['stamp-requests', 'approval'],
+      FETCHER.post('/stamp-request/approval', { ...props }),
+    mutationKey: ['stamp-request', 'approval'],
   })
 }
