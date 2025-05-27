@@ -28,6 +28,6 @@ export function useAnalysisRecentExchangesQuery({ storeId }: Props) {
           { params: { storeId } },
         )
       ).data.data,
-    queryKey: ['analysis', 'customer', storeId],
+    queryKey: ['analysis', 'recent-exchanges', storeId],
   })
 }
