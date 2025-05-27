@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { useAnalysisCustomerQuery } from '@/apis/caches/analysis/customer.query'
 import { useDeomPoliciesQuery } from '@/apis/caches/deom-policies/[store-id].query'
 import { useDeomRequestApprovalMutation } from '@/apis/caches/deom-requests/approval.mutation'
 import { useDeomRequestRejectionMutation } from '@/apis/caches/deom-requests/rejection.mutation'
@@ -178,6 +179,7 @@ const StampingRequest: React.FC<{
 }> = ({ data, otpCode, onSuccess }) => {
   const [count, setCount] = useState<number>(1)
   const stampPoliciesQuery = useStampPoliciesQuery({ storeId: data.storeId })
+  const userRankQuery = useAnalysisCustomerQuery({ storeId: data.storeId })
 
   const matchedIndex =
     (stampPoliciesQuery.data?.findIndex(d => d.id === data.deomId) ?? -1) - 1
@@ -188,7 +190,8 @@ const StampingRequest: React.FC<{
   const isLoading =
     approvalMutation.isPending ||
     rejectionMutation.isPending ||
-    stampPoliciesQuery.isFetching
+    stampPoliciesQuery.isFetching ||
+    userRankQuery.isFetching
 
   const onDeny = () => {
     if (isLoading) {
@@ -230,7 +233,10 @@ const StampingRequest: React.FC<{
       </div>
 
       <div className="flex flex-row justify-center text-xl font-bold">
-        지금까지 {data.usedStampAmount} 개를 적립하신 고객입니다
+        지금까지{' '}
+        {userRankQuery.data?.find(r => r.userId === data.userId)
+          ?.accumulatedStampAmount ?? 0}{' '}
+        개를 적립하신 고객입니다
       </div>
       <div className="flex flex-row items-center justify-center gap-4 text-xl">
         <span className="font-bold">스탬프 개수</span>
@@ -301,6 +307,7 @@ const ExchangeRequest: React.FC<{
   onSuccess: () => void
 }> = ({ data, otpCode, onSuccess }) => {
   const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: data.storeId })
+  const userRankQuery = useAnalysisCustomerQuery({ storeId: data.storeId })
 
   const matchedIndex =
     (deomPoliciesQuery.data?.findIndex(d => d.id === data.deomId) ?? -1) - 1
@@ -313,7 +320,8 @@ const ExchangeRequest: React.FC<{
   const isLoading =
     approvalMutation.isPending ||
     rejectionMutation.isPending ||
-    deomPoliciesQuery.isFetching
+    deomPoliciesQuery.isFetching ||
+    userRankQuery.isFetching
 
   const onDeny = () => {
     if (isLoading) {
@@ -356,7 +364,10 @@ const ExchangeRequest: React.FC<{
       </div>
 
       <div className="flex flex-row justify-center text-xl font-bold">
-        지금까지 {data.usedStampAmount} 개를 적립하신 고객입니다
+        지금까지{' '}
+        {userRankQuery.data?.find(r => r.userId === data.userId)
+          ?.accumulatedStampAmount ?? 0}{' '}
+        개를 적립하신 고객입니다
       </div>
       {deomPoliciesQuery.isFetching || deomPoliciesQuery.data === undefined ? (
         <div className="flex items-center justify-center w-full h-16">
