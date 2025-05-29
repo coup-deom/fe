@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/airbnbs/button'
 import { Dialog } from '@/components/base/Dialog'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   createRootRoute,
   Outlet,
@@ -10,8 +9,6 @@ import {
   useRouter,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   component: import.meta.env.DEV
@@ -57,9 +54,7 @@ export const Route = createRootRoute({
 
         return (
           <>
-            <QueryClientProvider client={queryClient}>
-              <Outlet />
-            </QueryClientProvider>
+            <Outlet />
             <Dialog open={dialog !== null}>
               {dialog && (
                 <>
@@ -83,9 +78,5 @@ export const Route = createRootRoute({
           </>
         )
       }
-    : () => (
-        <QueryClientProvider client={queryClient}>
-          <Outlet />
-        </QueryClientProvider>
-      ),
+    : () => <Outlet />,
 })

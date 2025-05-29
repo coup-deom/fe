@@ -26,6 +26,15 @@ const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = createRoot(rootElement)
 
+  queryClient.getMutationCache().subscribe(e => {
+    if (e.type === 'updated' && e.action.type === 'success') {
+      const mutationKey = e.mutation?.options.mutationKey
+      queryClient.invalidateQueries({
+        queryKey: mutationKey,
+      })
+    }
+  })
+
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>

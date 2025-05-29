@@ -1,22 +1,22 @@
 import { useCallback, useEffect, useState } from 'react'
 
 import {
+  useDeomPoliciesMutation,
+  UseDeomPoliciesMutationResponse,
+} from '@/apis/caches/deom-policies/[store-id].mutation'
+import {
   useDeomPoliciesQuery,
   UseDeomPoliciesQueryResponse,
 } from '@/apis/caches/deom-policies/[store-id].query'
-import {
-  useDeomPolicyMutation,
-  UseDeomPolicyMutationResponse,
-} from '@/apis/caches/deom-policies/index.mutation'
 import { UseUserMeQuery } from '@/apis/caches/user/me.query'
+import {
+  useStampPoliciesMutation,
+  UseStampPoliciesMutationResponse,
+} from '@/apis/stamp-policies/[store-id].mutation'
 import {
   useStampPoliciesQuery,
   UseStampPoliciesQueryResponse,
 } from '@/apis/stamp-policies/[store-id].query'
-import {
-  useStampPolicyMutation,
-  UseStampPolicyMutationResponse,
-} from '@/apis/stamp-policies/index.mutation'
 import { ProviderMap } from '@/apis/types/Provider.types'
 import { Button } from '@/components/airbnbs/button'
 import { Input } from '@/components/airbnbs/input'
@@ -109,13 +109,15 @@ function MyPage() {
 }
 
 const DeomSection: React.FC = () => {
-  type FormData = Omit<UseDeomPolicyMutationResponse, 'id'> & {
-    id?: UseDeomPolicyMutationResponse['id']
+  type FormData = Omit<UseDeomPoliciesMutationResponse, 'id'> & {
+    id?: UseDeomPoliciesMutationResponse['id']
   }
 
   const { idToken } = useAccessToken()
   const deomPoliciesQuery = useDeomPoliciesQuery({ storeId: idToken.storeId })
-  const deomPolicyMutation = useDeomPolicyMutation()
+  const deomPoliciesMutation = useDeomPoliciesMutation({
+    storeId: idToken.storeId,
+  })
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
   const [formData, setFormData] = useState<FormData[]>([])
@@ -126,21 +128,24 @@ const DeomSection: React.FC = () => {
         d.map(r => ({
           name: r.name,
           requiredStampAmount: r.requiredStampAmount,
-          storeId: idToken.storeId,
           id: r.id,
         })),
       )
     },
-    [setFormData, idToken.storeId],
+    [setFormData],
   )
 
-  const submit = async (data: FormData[], callback: () => void) => {
-    await Promise.allSettled(data.map(d => deomPolicyMutation.mutateAsync(d)))
-    callback()
+  const submit = async (policies: FormData[], callback: () => void) => {
+    deomPoliciesMutation.mutate(
+      { policies },
+      {
+        onSuccess: () => callback(),
+      },
+    )
   }
 
   const onModeChange = (m?: 'edit' | 'view') => {
-    if (deomPoliciesQuery.isPending || deomPolicyMutation.isPending) {
+    if (deomPoliciesQuery.isPending || deomPoliciesMutation.isPending) {
       return
     }
     const data = deomPoliciesQuery.data
@@ -259,7 +264,6 @@ const DeomSection: React.FC = () => {
                 onFormDataChange(formData.length)({
                   requiredStampAmount: 0,
                   name: '',
-                  storeId: idToken.storeId,
                 })
               }
             >
@@ -273,13 +277,14 @@ const DeomSection: React.FC = () => {
 }
 
 const StampGuideSection: React.FC = () => {
-  type FormData = Omit<UseStampPolicyMutationResponse, 'id'> & {
-    id?: UseStampPolicyMutationResponse['id']
+  type FormData = Omit<UseStampPoliciesMutationResponse, 'id'> & {
+    id?: UseStampPoliciesMutationResponse['id']
   }
   const { idToken } = useAccessToken()
-  // TODO: userId인지 아니면 입점 후에 별개의 storeId가 있는지 확인 필요
   const stampPoliciesQuery = useStampPoliciesQuery({ storeId: idToken.storeId })
-  const stampPoliciesMutation = useStampPolicyMutation()
+  const stampPoliciesMutation = useStampPoliciesMutation({
+    storeId: idToken.storeId,
+  })
 
   const [mode, setMode] = useState<'edit' | 'view'>('view')
   const [formData, setFormData] = useState<FormData[]>([])
@@ -289,16 +294,17 @@ const StampGuideSection: React.FC = () => {
       d.map(r => ({
         baseAmount: r.baseAmount,
         stampCount: r.stampCount,
-        storeId: idToken.storeId,
         id: r.id,
       })),
     )
   }
-  const submit = async (data: FormData[], callback: () => void) => {
-    await Promise.allSettled(
-      data.map(d => stampPoliciesMutation.mutateAsync(d)),
+  const submit = async (policies: FormData[], callback: () => void) => {
+    stampPoliciesMutation.mutate(
+      { policies },
+      {
+        onSuccess: () => callback(),
+      },
     )
-    callback()
   }
   const onModeChange = (m?: 'edit' | 'view') => {
     const data = stampPoliciesQuery.data
@@ -412,7 +418,6 @@ const StampGuideSection: React.FC = () => {
                 onFormDataChange(formData.length)({
                   baseAmount: 0,
                   stampCount: 0,
-                  storeId: idToken.storeId,
                 })
               }
             >
