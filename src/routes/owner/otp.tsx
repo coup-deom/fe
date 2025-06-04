@@ -310,7 +310,7 @@ const ExchangeRequest: React.FC<{
   const userRankQuery = useAnalysisCustomerQuery({ storeId: data.storeId })
 
   const matchedIndex =
-    (deomPoliciesQuery.data?.findIndex(d => d.id === data.deomId) ?? -1) - 1
+    deomPoliciesQuery.data?.findIndex(d => d.id === data.deomId) ?? -1
   const matched =
     matchedIndex >= 0 ? deomPoliciesQuery.data?.at(matchedIndex) : undefined
 
@@ -385,11 +385,7 @@ const ExchangeRequest: React.FC<{
                   key={r.id}
                   className={cn(
                     'flex flex-row justify-between font-medium align-center text-medium',
-                    matchedIndex === i ||
-                      (matchedIndex === -2 &&
-                        i === deomPoliciesQuery.data.length - 1)
-                      ? 'text-[#DD3F57]'
-                      : '',
+                    matchedIndex === i ? 'text-[#DD3F57]' : '',
                   )}
                 >
                   <div>스탬프 {r.requiredStampAmount}개</div>
