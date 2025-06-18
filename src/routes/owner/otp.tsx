@@ -182,7 +182,7 @@ const StampingRequest: React.FC<{
   const userRankQuery = useAnalysisCustomerQuery({ storeId: data.storeId })
 
   const matchedIndex =
-    (stampPoliciesQuery.data?.findIndex(d => d.id === data.deomId) ?? -1) - 1
+    (stampPoliciesQuery.data?.findIndex(d => d.stampCount >= count) ?? -2) 
 
   const approvalMutation = useStampRequestApprovalMutation()
   const rejectionMutation = useStampRequestRejectionMutation()
@@ -263,7 +263,7 @@ const StampingRequest: React.FC<{
                 className={cn(
                   'flex flex-row justify-between font-medium align-center text-medium',
                   matchedIndex === i ||
-                    (matchedIndex === -2 &&
+                    (matchedIndex === -1 &&
                       i === stampPoliciesQuery.data.length - 1)
                     ? 'text-[#22CC88]'
                     : '',
